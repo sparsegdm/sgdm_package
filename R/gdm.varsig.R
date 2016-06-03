@@ -9,7 +9,7 @@ gdm.varsig <-
 
     # v.2
     #
-    # p. j. leit?o - 2nd October 2016
+    # p. j. leitao - 2nd October 2016
     #
     # function to test statistical significance predictor variable drop contributions on GDM model
     #
