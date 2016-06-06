@@ -73,8 +73,8 @@
 #       }
 #     }
 #   }
-
-
+#
+#
 # gdm.loo <-
 #   function(cdata,                  # compiled dataset as output from "data.read" function
 #            biodata,                # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
@@ -216,8 +216,8 @@
 #       return (performance)
 #     }
 #   }
-
-
+#
+#
 # gdm.varcont <-
 #   function(cdata,               # compiled dataset as output from "data.read" function
 #            geo = FALSE)         # optional use of geographical distance as predictor in GDM model, set as FALSE per default
@@ -272,8 +272,8 @@
 #
 #     return(contribs)
 #   }
-
-
+#
+#
 # gdm.varsig <-
 #   function(envdata,         # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
 #            biodata,         # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
@@ -380,354 +380,354 @@
 #
 #     return(cont.sig<=sig)
 #   }
-
-
-
-envdata.reduce <-
-  function(envdata,     # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           sigtest)     # predictor variable contribution significance test, as output by gdm.varsig
-  {
-
-    #
-    # p. j. leit?o - 2nd May 2016
-    #
-    # function for reducing environmental data based on significance test of GDM predictor variable contributions
-    #
-    # delivers reduced environmental data matrix
-    #
-
-    # Reducing dataset
-
-    cat("Reducing environmental dataset following significance test result\n")
-    cat("\n")
-
-    data.sigtest <- rbind(as.matrix(as.logical(c("T","T","T"))),sigtest)
-    new.envdata <- envdata[,data.sigtest]
-
-    cat("Data reduction of environmental dataset finished\n")
-    cat("\n")
-
-    return(new.envdata)
-  }
-
-
-cdata.reduce <-
-  function(cdata,               # compiled dataset as output from "data.read" function
-           sigtest)             # predictor variable contribution significance test, as output by gdm.varsig
-  {
-
-    #
-    # p. j. leit?o - 12th May 2014
-    #
-    # function for reducing compiled dataset based on significance test of GDM predictor variable contributions
-    #
-    # delivers reduced compiled dataset
-    #
-
-    # Reducing dataset
-
-    cat("Reducing compiled dataset following significance test result\n")
-    cat("\n")
-
-    cdata.sigtest <- rbind(as.matrix(as.logical(c("T","T","T","T","T","T"))),sigtest,sigtest)
-    new.cdata <- cdata[,cdata.sigtest]
-
-    cat("Data reduction of compiled dataset finished\n")
-    cat("\n")
-
-    return(new.cdata)
-  }
-
-
-sgdm.gridsearch <-
-  function(envdata,                   # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,                   # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           comps = 10,                # number of sparce canonical components to be calculated, set as 10 per default
-           metric="bray",             # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default
-           env.penalization=penalize, # vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
-           bio.penalization=penalize, # vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
-           geo = F)                   # optional use of geographical distance as predictor in GDM model, set as FALSE per default
-  {
-
-    # v.2
-    #
-    # p. j. leit?o - 2nd May 2016
-    #
-    # function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
-    #
-    # delivers performance matrix with RMSE values for each SCCA penalization parameter pair
-    #
-
-    # dependencies
-
-    require(PMA)
-
-    # data reading
-
-    cat("\n")
-    cat("Running SGDM model paramerization\n")
-    cat("\n")
-
-    j1 <- ncol(envdata)
-
-    j2 <- ncol(biodata)
-    n2 <- nrow(biodata)
-    t2 <- n2-1
-    pairc <- n2*t2
-
-    latlong <- as.matrix(envdata[,2:3])
-    id <- as.matrix(envdata[,1])
-
-    r <- as.matrix(biodata[,2:j2])
-    p <- as.matrix(envdata[,4:j1])
-
-    penalize <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
-
-    br <- length(bio.penalization)
-    bc <- length(env.penalization)
-
-    # creating output performance matrix
-
-    perfmatrix <- matrix(ncol = bc, nrow = br, data = 0)
-    rownames(perfmatrix) = bio.penalization
-    colnames(perfmatrix) = env.penalization
-
-    # creating performance test
-
-    perf.test <- matrix (ncol = 2, nrow = pairc, data = 0)
-    colnames(perf.test) = c("observed", "predicted")
-
-    # initialising grid search of SCCA penalization parameters
-
-    cat("Grid search for setting SCCA penalization:\n")
-
-    for (px in bio.penalization) for (pz in env.penalization) {
-      cat("\n")
-      cat(paste("Penalization on species data (x) =",px,"; penalization on environmental data (y) =",pz,"\n"))
-      cat("\n")
-      cat("SCCA Model:\n")
-
-      # running SCCA
-
-      cca <- CCA(r, p, typex="standard",typez="standard", penaltyx=px,
-                 penaltyz=pz, K=comps, niter=50, v=NULL, trace=TRUE, standardize=TRUE,
-                 xnames=NULL, znames=NULL)
-
-      # extracting canonical vectors
-
-      v <- cca$v
-
-      # tranforming environmental data into canonical components
-
-      c <- p %*% v
-      cgi <- cbind(id,latlong,c)
-      cgi <- as.data.frame(cgi)
-      colnames(cgi)[1]<- "Plot_ID"
-
-      # compiling dataset
-
-      cdata <- data.read(cgi,biodata,metric=metric)
-
-      # calulating GDM model performance
-
-      performance <- gdm.loo(cdata,biodata,metric=metric,geo=geo)
-
-      # feeding performance matrix
-
-      perfmatrix[paste(px), paste(pz)] <- performance
-    }
-
-    cat("\n")
-    cat("\n")
-    cat("Finished SGDM parameterization: performance raster created\n")
-    cat("\n")
-
-    return(perfmatrix)
-  }
-
-
-
-sgdm.best <-
-  function(grid.matrix,           # performance matrix as output from sgdm.grid
-           envdata,               # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,               # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           comps = 10,            # number of sparce canonical components to be calculated, set as 10 per default
-           metric="bray",         # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
-           geo = F)               # optional use of geographical distance as predictor in GDM model, set as FALSE per default
-  {
-
-    # v.2
-    #
-    # p. j. leit?o - 2nd May 2016
-    #
-    # function to retrieve the best SGDM model, as resulting from the SCCA parameter estimation using sgdm.grid
-    #
-    # delivers GDM model using sparce canonical components extracted with parameter pair with respective best performance
-    #
-
-    # dependencies
-
-    require(PMA)
-
-    # data reading
-
-    cat("Retrieving best SGDM model after parameterization\n")
-    cat("\n")
-
-    j1 <- ncol(envdata)
-    j2 <- ncol(biodata)
-
-    latlong <- as.matrix(envdata[,2:3])
-    id <- as.matrix(envdata[,1])
-
-    # reading SCCA parameterization from performance matrix
-
-    min.index<-arrayInd(which.min(grid.matrix),dim(grid.matrix))
-    rname <- as.numeric(rownames(grid.matrix)[min.index[1]])
-    cname <- as.numeric(colnames(grid.matrix)[min.index[2]])
-
-    # running SCCA
-
-    cca.best <- CCA(biodata[,2:j2], envdata[,4:j1], typex="standard",typez="standard", penaltyx=cname,
-                    penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
-                    xnames=NULL, znames=NULL)
-
-    # extracting canonical vectors
-
-    v.best <- cca.best$v
-
-    # transforming environmental data into canonical components
-
-    c.best <- as.matrix(envdata[,4:j1])
-    c.best <- c.best %*% v.best
-    cgi <- cbind(id,latlong,c.best)
-    cgi <- as.data.frame(cgi)
-    colnames(cgi)[1]<- "Plot_ID"
-
-    # compiling data
-
-    cdata <- data.read(cgi,biodata,metric=metric)
-
-    # running GDM model
-
-    gdm.mod <- gdm(cdata,geo=geo)
-
-    cat("Best SGDM model created\n")
-    cat("\n")
-
-    return (gdm.mod)
-  }
-
-
-scc.best <-
-  function(grid.matrix,       # performance matrix as output from sgdm.grid
-           envdata,           # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           comps = 10)        # number of sparce canonical components to be calculated, set as 10 per default
-  {
-
-    #
-    # p. j. leit?o - 9th May 2014
-    #
-    # function to retrieve the SCCA canonical components corresponding to the best SGDM model, as resulting from the SCCA parameter estimation using sgdm.grid
-    #
-    # delivers sparse canonical components extracted with parameter pair with respective best performance
-    #
-
-    # dependencies
-
-    require(PMA)
-
-    # data reading
-
-    cat("Retrieving sparse canonical components corresponding to the best SGDM model after parameterization\n")
-    cat("\n")
-
-    j1 <- ncol(envdata)
-    j2 <- ncol(biodata)
-
-    latlong <- as.matrix(envdata[,2:3])
-    id <- as.matrix(envdata[,1])
-
-    # reading SCCA parameterization from performance matrix
-
-    min.index<-arrayInd(which.min(grid.matrix),dim(grid.matrix))
-    rname <- as.numeric(rownames(grid.matrix)[min.index[1]])
-    cname <- as.numeric(colnames(grid.matrix)[min.index[2]])
-
-    # running SCCA
-
-    cca.best <- CCA(biodata[,2:j2], envdata[,4:j1], typex="standard",typez="standard", penaltyx=cname,
-                    penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
-                    xnames=NULL, znames=NULL)
-
-    # extracting canonical vectors
-
-    v.best <- cca.best$v
-
-    # transforming environmental data into canonical components
-
-    c.best <- as.matrix(envdata[,4:j1])
-    c.best <- c.best %*% v.best
-    cgi <- cbind(id,latlong,c.best)
-    cgi <- as.data.frame(cgi)
-    names(cgi)[1] <- "Plot_ID"
-
-    cat("Sparse canonical components created\n")
-    cat("\n")
-
-    return (cgi)
-  }
-
-
-scv.best <-
-  function(grid.matrix,       # performance matrix as output from sgdm.grid
-           envdata,           # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           comps = 10)        # number of sparce canonical components to be calculated, set as 10 per default
-  {
-
-    #
-    # p. j. leit?o - 9th May 2014
-    #
-    # function to retrieve the SCCA canonical vectors corresponding to the best SGDM model, as resulting from the SCCA parameter estimation using sgdm.grid
-    #
-    # delivers sparse canonical vectors extracted with parameter pair with respective best performance
-    #
-
-    # dependencies
-
-    require(PMA)
-
-    # data reading
-
-    cat("Retrieving sparse canonical vectors corresponding to the best SGDM model after parameterization\n")
-    cat("\n")
-
-    j1 <- ncol(envdata)
-    j2 <- ncol(biodata)
-
-    latlong <- as.matrix(envdata[,2:3])
-    id <- as.matrix(envdata[,1])
-
-    # reading SCCA parameterization from performance matrix
-
-    min.index<-arrayInd(which.min(grid.matrix),dim(grid.matrix))
-    rname <- as.numeric(rownames(grid.matrix)[min.index[1]])
-    cname <- as.numeric(colnames(grid.matrix)[min.index[2]])
-
-    # running SCCA
-
-    cca.best <- CCA(biodata[,2:j2], envdata[,4:j1], typex="standard",typez="standard", penaltyx=cname,
-                    penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
-                    xnames=NULL, znames=NULL)
-
-    # extracting canonical vectors
-
-    v.best <- cca.best$v
-
-    cat("Sparse canonical vectors created\n")
-    cat("\n")
-
-    return (v.best)
-  }
+#
+#
+#
+# envdata.reduce <-
+#   function(envdata,     # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+#            sigtest)     # predictor variable contribution significance test, as output by gdm.varsig
+#   {
+#
+#     #
+#     # p. j. leit?o - 2nd May 2016
+#     #
+#     # function for reducing environmental data based on significance test of GDM predictor variable contributions
+#     #
+#     # delivers reduced environmental data matrix
+#     #
+#
+#     # Reducing dataset
+#
+#     cat("Reducing environmental dataset following significance test result\n")
+#     cat("\n")
+#
+#     data.sigtest <- rbind(as.matrix(as.logical(c("T","T","T"))),sigtest)
+#     new.envdata <- envdata[,data.sigtest]
+#
+#     cat("Data reduction of environmental dataset finished\n")
+#     cat("\n")
+#
+#     return(new.envdata)
+#   }
+#
+#
+# cdata.reduce <-
+#   function(cdata,               # compiled dataset as output from "data.read" function
+#            sigtest)             # predictor variable contribution significance test, as output by gdm.varsig
+#   {
+#
+#     #
+#     # p. j. leit?o - 12th May 2014
+#     #
+#     # function for reducing compiled dataset based on significance test of GDM predictor variable contributions
+#     #
+#     # delivers reduced compiled dataset
+#     #
+#
+#     # Reducing dataset
+#
+#     cat("Reducing compiled dataset following significance test result\n")
+#     cat("\n")
+#
+#     cdata.sigtest <- rbind(as.matrix(as.logical(c("T","T","T","T","T","T"))),sigtest,sigtest)
+#     new.cdata <- cdata[,cdata.sigtest]
+#
+#     cat("Data reduction of compiled dataset finished\n")
+#     cat("\n")
+#
+#     return(new.cdata)
+#   }
+#
+#
+# sgdm.gridsearch <-
+#   function(envdata,                   # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+#            biodata,                   # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+#            comps = 10,                # number of sparce canonical components to be calculated, set as 10 per default
+#            metric="bray",             # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default
+#            env.penalization=penalize, # vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
+#            bio.penalization=penalize, # vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
+#            geo = F)                   # optional use of geographical distance as predictor in GDM model, set as FALSE per default
+#   {
+#
+#     # v.2
+#     #
+#     # p. j. leit?o - 2nd May 2016
+#     #
+#     # function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
+#     #
+#     # delivers performance matrix with RMSE values for each SCCA penalization parameter pair
+#     #
+#
+#     # dependencies
+#
+#     require(PMA)
+#
+#     # data reading
+#
+#     cat("\n")
+#     cat("Running SGDM model paramerization\n")
+#     cat("\n")
+#
+#     j1 <- ncol(envdata)
+#
+#     j2 <- ncol(biodata)
+#     n2 <- nrow(biodata)
+#     t2 <- n2-1
+#     pairc <- n2*t2
+#
+#     latlong <- as.matrix(envdata[,2:3])
+#     id <- as.matrix(envdata[,1])
+#
+#     r <- as.matrix(biodata[,2:j2])
+#     p <- as.matrix(envdata[,4:j1])
+#
+#     penalize <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
+#
+#     br <- length(bio.penalization)
+#     bc <- length(env.penalization)
+#
+#     # creating output performance matrix
+#
+#     perfmatrix <- matrix(ncol = bc, nrow = br, data = 0)
+#     rownames(perfmatrix) = bio.penalization
+#     colnames(perfmatrix) = env.penalization
+#
+#     # creating performance test
+#
+#     perf.test <- matrix (ncol = 2, nrow = pairc, data = 0)
+#     colnames(perf.test) = c("observed", "predicted")
+#
+#     # initialising grid search of SCCA penalization parameters
+#
+#     cat("Grid search for setting SCCA penalization:\n")
+#
+#     for (px in bio.penalization) for (pz in env.penalization) {
+#       cat("\n")
+#       cat(paste("Penalization on species data (x) =",px,"; penalization on environmental data (y) =",pz,"\n"))
+#       cat("\n")
+#       cat("SCCA Model:\n")
+#
+#       # running SCCA
+#
+#       cca <- CCA(r, p, typex="standard",typez="standard", penaltyx=px,
+#                  penaltyz=pz, K=comps, niter=50, v=NULL, trace=TRUE, standardize=TRUE,
+#                  xnames=NULL, znames=NULL)
+#
+#       # extracting canonical vectors
+#
+#       v <- cca$v
+#
+#       # tranforming environmental data into canonical components
+#
+#       c <- p %*% v
+#       cgi <- cbind(id,latlong,c)
+#       cgi <- as.data.frame(cgi)
+#       colnames(cgi)[1]<- "Plot_ID"
+#
+#       # compiling dataset
+#
+#       cdata <- data.read(cgi,biodata,metric=metric)
+#
+#       # calulating GDM model performance
+#
+#       performance <- gdm.loo(cdata,biodata,metric=metric,geo=geo)
+#
+#       # feeding performance matrix
+#
+#       perfmatrix[paste(px), paste(pz)] <- performance
+#     }
+#
+#     cat("\n")
+#     cat("\n")
+#     cat("Finished SGDM parameterization: performance raster created\n")
+#     cat("\n")
+#
+#     return(perfmatrix)
+#   }
+#
+#
+#
+# sgdm.best <-
+#   function(grid.matrix,           # performance matrix as output from sgdm.grid
+#            envdata,               # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+#            biodata,               # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+#            comps = 10,            # number of sparce canonical components to be calculated, set as 10 per default
+#            metric="bray",         # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
+#            geo = F)               # optional use of geographical distance as predictor in GDM model, set as FALSE per default
+#   {
+#
+#     # v.2
+#     #
+#     # p. j. leit?o - 2nd May 2016
+#     #
+#     # function to retrieve the best SGDM model, as resulting from the SCCA parameter estimation using sgdm.grid
+#     #
+#     # delivers GDM model using sparce canonical components extracted with parameter pair with respective best performance
+#     #
+#
+#     # dependencies
+#
+#     require(PMA)
+#
+#     # data reading
+#
+#     cat("Retrieving best SGDM model after parameterization\n")
+#     cat("\n")
+#
+#     j1 <- ncol(envdata)
+#     j2 <- ncol(biodata)
+#
+#     latlong <- as.matrix(envdata[,2:3])
+#     id <- as.matrix(envdata[,1])
+#
+#     # reading SCCA parameterization from performance matrix
+#
+#     min.index<-arrayInd(which.min(grid.matrix),dim(grid.matrix))
+#     rname <- as.numeric(rownames(grid.matrix)[min.index[1]])
+#     cname <- as.numeric(colnames(grid.matrix)[min.index[2]])
+#
+#     # running SCCA
+#
+#     cca.best <- CCA(biodata[,2:j2], envdata[,4:j1], typex="standard",typez="standard", penaltyx=cname,
+#                     penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
+#                     xnames=NULL, znames=NULL)
+#
+#     # extracting canonical vectors
+#
+#     v.best <- cca.best$v
+#
+#     # transforming environmental data into canonical components
+#
+#     c.best <- as.matrix(envdata[,4:j1])
+#     c.best <- c.best %*% v.best
+#     cgi <- cbind(id,latlong,c.best)
+#     cgi <- as.data.frame(cgi)
+#     colnames(cgi)[1]<- "Plot_ID"
+#
+#     # compiling data
+#
+#     cdata <- data.read(cgi,biodata,metric=metric)
+#
+#     # running GDM model
+#
+#     gdm.mod <- gdm(cdata,geo=geo)
+#
+#     cat("Best SGDM model created\n")
+#     cat("\n")
+#
+#     return (gdm.mod)
+#   }
+#
+#
+# scc.best <-
+#   function(grid.matrix,       # performance matrix as output from sgdm.grid
+#            envdata,           # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+#            biodata,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+#            comps = 10)        # number of sparce canonical components to be calculated, set as 10 per default
+#   {
+#
+#     #
+#     # p. j. leit?o - 9th May 2014
+#     #
+#     # function to retrieve the SCCA canonical components corresponding to the best SGDM model, as resulting from the SCCA parameter estimation using sgdm.grid
+#     #
+#     # delivers sparse canonical components extracted with parameter pair with respective best performance
+#     #
+#
+#     # dependencies
+#
+#     require(PMA)
+#
+#     # data reading
+#
+#     cat("Retrieving sparse canonical components corresponding to the best SGDM model after parameterization\n")
+#     cat("\n")
+#
+#     j1 <- ncol(envdata)
+#     j2 <- ncol(biodata)
+#
+#     latlong <- as.matrix(envdata[,2:3])
+#     id <- as.matrix(envdata[,1])
+#
+#     # reading SCCA parameterization from performance matrix
+#
+#     min.index<-arrayInd(which.min(grid.matrix),dim(grid.matrix))
+#     rname <- as.numeric(rownames(grid.matrix)[min.index[1]])
+#     cname <- as.numeric(colnames(grid.matrix)[min.index[2]])
+#
+#     # running SCCA
+#
+#     cca.best <- CCA(biodata[,2:j2], envdata[,4:j1], typex="standard",typez="standard", penaltyx=cname,
+#                     penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
+#                     xnames=NULL, znames=NULL)
+#
+#     # extracting canonical vectors
+#
+#     v.best <- cca.best$v
+#
+#     # transforming environmental data into canonical components
+#
+#     c.best <- as.matrix(envdata[,4:j1])
+#     c.best <- c.best %*% v.best
+#     cgi <- cbind(id,latlong,c.best)
+#     cgi <- as.data.frame(cgi)
+#     names(cgi)[1] <- "Plot_ID"
+#
+#     cat("Sparse canonical components created\n")
+#     cat("\n")
+#
+#     return (cgi)
+#   }
+#
+#
+# scv.best <-
+#   function(grid.matrix,       # performance matrix as output from sgdm.grid
+#            envdata,           # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+#            biodata,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+#            comps = 10)        # number of sparce canonical components to be calculated, set as 10 per default
+#   {
+#
+#     #
+#     # p. j. leit?o - 9th May 2014
+#     #
+#     # function to retrieve the SCCA canonical vectors corresponding to the best SGDM model, as resulting from the SCCA parameter estimation using sgdm.grid
+#     #
+#     # delivers sparse canonical vectors extracted with parameter pair with respective best performance
+#     #
+#
+#     # dependencies
+#
+#     require(PMA)
+#
+#     # data reading
+#
+#     cat("Retrieving sparse canonical vectors corresponding to the best SGDM model after parameterization\n")
+#     cat("\n")
+#
+#     j1 <- ncol(envdata)
+#     j2 <- ncol(biodata)
+#
+#     latlong <- as.matrix(envdata[,2:3])
+#     id <- as.matrix(envdata[,1])
+#
+#     # reading SCCA parameterization from performance matrix
+#
+#     min.index<-arrayInd(which.min(grid.matrix),dim(grid.matrix))
+#     rname <- as.numeric(rownames(grid.matrix)[min.index[1]])
+#     cname <- as.numeric(colnames(grid.matrix)[min.index[2]])
+#
+#     # running SCCA
+#
+#     cca.best <- CCA(biodata[,2:j2], envdata[,4:j1], typex="standard",typez="standard", penaltyx=cname,
+#                     penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
+#                     xnames=NULL, znames=NULL)
+#
+#     # extracting canonical vectors
+#
+#     v.best <- cca.best$v
+#
+#     cat("Sparse canonical vectors created\n")
+#     cat("\n")
+#
+#     return (v.best)
+#   }
