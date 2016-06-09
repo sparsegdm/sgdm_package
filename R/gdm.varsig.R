@@ -7,9 +7,9 @@ gdm.varsig <-
            sig = 0.05)      # significance level, set as 0.05 per default
   {
 
-    # v.2
+    # v.3
     #
-    # p. j. leitao - 2nd October 2016
+    # p. j. leitao - 5th june 2016
     #
     # function to test statistical significance predictor variable drop contributions on GDM model
     #
@@ -25,10 +25,8 @@ gdm.varsig <-
     # data reading
 
     j2 <- ncol(biodata)
-    biodata10000 <- cbind(biodata[,1],(trunc(biodata[,2:j2]*10000)))
-    colnames(biodata10000)[1]<-colnames(biodata)[1]
 
-    cdata <- data.read(envdata,biodata10000,metric=metric)
+    cdata <- data.read(envdata,biodata,metric=metric)
 
     cat("Testing for significance of GDM model variable contributions\n")
     cat("\n")
@@ -51,7 +49,7 @@ gdm.varsig <-
     cat("Performing species matrix permutations\n")
     cat("\n")
 
-    bio.m <- as.matrix(biodata10000[,2:j2])
+    bio.m <- as.matrix(biodata[,2:j2])
     bio.perm <- permatfull(bio.m, fixedmar = "row", times = w)
 
     perm.m <- matrix(0,w,1)
