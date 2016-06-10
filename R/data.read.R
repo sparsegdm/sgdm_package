@@ -39,15 +39,13 @@ data.read  <-
     pairs <- ((n2^2)-n2)/2
 
     if (n1 == 1){
-      cat("ERROR! Data has one sample only, no pairwise combinations possible! ")
-      cat("Please note that an empty object may have been created!\n")
-      cat("\n")
+      stop("Data has one sample only, no pairwise combinations possible!")
     }
 
     else{
       if (n1 != n2){
-        cat("ERROR! Biological and environmental data not consistent, check input data!\n")
-        cat("\n")}
+        stop("Biological and environmental data not consistent, check input data!")
+      }
 
       else{
         cat("Data check OK!\n")
