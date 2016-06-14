@@ -1,11 +1,11 @@
 sgdm.train <-
-  function(envdata,                   # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,                   # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           comps = 10,                # number of sparce canonical components to be calculated, set as 10 per default
-           metric="bray",             # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default
-           env.penalization=penalize, # vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
-           bio.penalization=penalize, # vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
-           geo = F)                   # optional use of geographical distance as predictor in GDM model, set as FALSE per default
+  function(envdata,                           # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+           biodata,                           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+           comps = 10,                        # number of sparce canonical components to be calculated, set as 10 per default
+           metric = "bray",                   # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default
+           env.penalization = seq(0, 1, 0.1), # vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
+           bio.penalization = seq(0, 1, 0.1), # vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
+           geo = F)                           # optional use of geographical distance as predictor in GDM model, set as FALSE per default
   {
 
     # v.2
@@ -39,8 +39,6 @@ sgdm.train <-
 
     r <- as.matrix(biodata[,2:j2])
     p <- as.matrix(envdata[,4:j1])
-
-    penalize <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
 
     br <- length(bio.penalization)
     bc <- length(env.penalization)

@@ -1,4 +1,4 @@
-"gdm.validate" <-
+gdm.validate <-
   function(caldata,                   # calibration data
            valdata,                   # validation data
            geo = F)                   # optional use of geographical distance as predictor in GDM model set as FALSE per default

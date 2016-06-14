@@ -1,4 +1,4 @@
-"cdata.transform" <-
+cdata.transform <-
   function(cdata,
            endata,
            spdata,
