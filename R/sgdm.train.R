@@ -85,7 +85,7 @@ sgdm.train <-
 
       # cdata <- data.read(cgi,biodata,metric=metric)
 
-      cdata <- formatsitepair(biodata, 1, dist = metric, abundance = abundance,
+      cdata <- formatsitepair(biodata, 1, dist = metric, abundance = TRUE,
                               siteColumn = "Plot_ID", XColumn="X",YColumn="Y",
                               predData = cgi)
 
