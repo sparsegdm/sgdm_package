@@ -72,7 +72,7 @@ sgdm.best <-
       return (cgi)
       }
 
-      else {
+      if (output == "g") {
         # compiling data
 
         cdata <- data.read(cgi,biodata,metric=metric)
@@ -85,6 +85,10 @@ sgdm.best <-
         cat("\n")
 
         return (gdm.mod)
+      }
+
+      else{
+        stop("Invalid output type!")
       }
     }
   }

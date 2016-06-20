@@ -180,6 +180,10 @@ gdm.cv <-
         performance <- sqrt(mean((perf.test[,1]-perf.test[,2])^2))
       }
 
+      else{
+        stop("Invalid data type!")
+      }
+
       cat("Model performance calculated\n")
       cat("\n")
 
