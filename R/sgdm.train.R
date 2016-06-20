@@ -83,7 +83,11 @@ sgdm.train <-
 
       # compiling dataset
 
-      cdata <- data.read(cgi,biodata,metric=metric)
+      # cdata <- data.read(cgi,biodata,metric=metric)
+
+      cdata <- formatsitepair(biodata, 1, dist = metric, abundance = abundance,
+                              siteColumn = "Plot_ID", XColumn="X",YColumn="Y",
+                              predData = cgi)
 
       # calulating GDM model performance
 
