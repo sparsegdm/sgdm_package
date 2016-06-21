@@ -1,6 +1,6 @@
 sgdm.train <-
-  function(envdata,                           # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,                           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+  function(predData,                          # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+           bioData,                           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
            comps = 10,                        # number of sparce canonical components to be calculated, set as 10 per default
            metric = "bray",                   # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default
            env.penalization = seq(0, 1, 0.1), # vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
@@ -10,7 +10,7 @@ sgdm.train <-
 
     # v.2
     #
-    # p. j. leit?o - 2nd May 2016
+    # p. j. leitao - 2nd May 2016
     #
     # function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
     #
@@ -27,18 +27,18 @@ sgdm.train <-
     cat("Running SGDM model paramerization\n")
     cat("\n")
 
-    j1 <- ncol(envdata)
+    j1 <- ncol(predData)
 
-    j2 <- ncol(biodata)
-    n2 <- nrow(biodata)
+    j2 <- ncol(bioData)
+    n2 <- nrow(bioData)
     t2 <- n2-1
     pairc <- n2*t2
 
-    latlong <- as.matrix(envdata[,2:3])
-    id <- as.matrix(envdata[,1])
+    latlong <- as.matrix(predData[,2:3])
+    id <- as.matrix(predData[,1])
 
-    r <- as.matrix(biodata[,2:j2])
-    p <- as.matrix(envdata[,4:j1])
+    r <- as.matrix(bioData[,2:j2])
+    p <- as.matrix(predData[,4:j1])
 
     br <- length(bio.penalization)
     bc <- length(env.penalization)
@@ -85,7 +85,7 @@ sgdm.train <-
 
       # cdata <- data.read(cgi,biodata,metric=metric)
 
-      cdata <- formatsitepair(biodata, 1, dist = metric, abundance = TRUE,
+      cdata <- formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
                               siteColumn = "Plot_ID", XColumn="X",YColumn="Y",
                               predData = cgi)
 

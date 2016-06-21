@@ -1,5 +1,5 @@
 gdm.cv <-
-  function(cdata,                  # compiled dataset as output from "data.read" function
+  function(spData,                 # compiled dataset as output from "data.read" function
            nfolds=10,              # number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
            metric="bray",          # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)
            performance="rmse",     # performance metric to be used ("rmse" or "r2"), set as "rmse" per default
@@ -22,7 +22,7 @@ gdm.cv <-
     require(gdm)
     # require(vegan)
 
-    pairs <- nrow(cdata)
+    pairs <- nrow(spData)
     n2 <- (1+sqrt(1+8*pairs))/2
     t2 <- n2-1
     pairc <- n2*t2
@@ -73,8 +73,8 @@ gdm.cv <-
           }
 
           # defining calibration and validation datasets
-          caldata <- cdata[which(index.sel==1),]
-          valdata <- cdata[which(index.sel==0),]
+          caldata <- spData[which(index.sel==1),]
+          valdata <- spData[which(index.sel==0),]
 
           observed <- as.data.frame(valdata[,1])
 
@@ -132,8 +132,8 @@ gdm.cv <-
 
           # defining calibration and validation datasets
 
-          caldata <- cdata[which(index.sel==1),]
-          valdata <- cdata[which(index.sel==0),]
+          caldata <- spData[which(index.sel==1),]
+          valdata <- spData[which(index.sel==0),]
 
           observed <- as.data.frame(valdata[,1])
 

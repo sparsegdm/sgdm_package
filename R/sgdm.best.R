@@ -1,7 +1,7 @@
 sgdm.best <-
   function(grid.matrix,       # performance matrix as output from sgdm.grid
-           envdata,           # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+           predData,          # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+           bioData,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
            output = "g",      # type of output: "g" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; default = gdm model
            comps = 10,        # number of sparce canonical components to be calculated, set as 10 per default
            metric="bray",     # only needed if output = "g"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
@@ -27,11 +27,11 @@ sgdm.best <-
     cat("Retrieving sparse canonical components corresponding to the best SGDM model after parameterization\n")
     cat("\n")
 
-    j1 <- ncol(envdata)
-    j2 <- ncol(biodata)
+    j1 <- ncol(predData)
+    j2 <- ncol(bioData)
 
-    latlong <- as.matrix(envdata[,2:3])
-    id <- as.matrix(envdata[,1])
+    latlong <- as.matrix(predData[,2:3])
+    id <- as.matrix(predData[,1])
 
     # reading SCCA parameterization from performance matrix
 
@@ -41,7 +41,7 @@ sgdm.best <-
 
     # running SCCA
 
-    cca.best <- CCA(biodata[,2:j2], envdata[,4:j1], typex="standard",typez="standard", penaltyx=cname,
+    cca.best <- CCA(bioData[,2:j2], predData[,4:j1], typex="standard",typez="standard", penaltyx=cname,
                     penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
                     xnames=NULL, znames=NULL)
 
@@ -59,7 +59,7 @@ sgdm.best <-
     else {
       # transforming environmental data into canonical components
 
-      c.best <- as.matrix(envdata[,4:j1])
+      c.best <- as.matrix(predData[,4:j1])
       c.best <- c.best %*% v.best
       cgi <- cbind(id,latlong,c.best)
       cgi <- as.data.frame(cgi)
@@ -75,11 +75,11 @@ sgdm.best <-
       if (output == "g") {
         # compiling data
 
-        cdata <- data.read(cgi,biodata,metric=metric)
+        psData <- data.read(cgi,bioData,metric=metric)
 
         # running GDM model
 
-        gdm.mod <- gdm(cdata,geo=geo)
+        gdm.mod <- gdm(psData,geo=geo)
 
         cat("Best SGDM model created\n")
         cat("\n")
