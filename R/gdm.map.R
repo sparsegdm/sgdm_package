@@ -2,8 +2,8 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
                     predMap,       # Data frame that has the same predictior variables as used for gdm model building
                     model,         # gdm.model
                     output="m",    # type of output: "n" NMDS model object
-                    #                 "p" NMDS transformed prediction map as data frame
-                    #                 "m" NMDS transformed prediction map as raster object (provide R raster object)
+                                   #                 "p" NMDS transformed prediction map as data frame
+                                   #                 "m" NMDS transformed prediction map as raster object (provide R raster object)
                     rst,           # R raster object with extent of the prediction map
                     k=0,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
                     t=0.1)         # NMDS stress value threshold to extract number of components if k is not specified
@@ -58,15 +58,19 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
     stress<-matrix(nrow=20,ncol=nrow(sample.pair.diss.mat))
     stress<-as.data.frame(stress)
 
-    for (j in 1:20){
-      for (i in 1:nrow(sample.pair.diss.mat)){
+    for (i in 1:nrow(sample.pair.diss.mat)){
+      for (j in 1:20){
 
-        table_nmds <- monoMDS(sample.pair.diss.mat, k=i, model ="global")
+        table_nmds <- monoMDS(sample.pair.diss.mat, k=i, model ="global", maxit=1000)
 
         # Stress values of model
+        # stressplot(table_nmds)
         stress[j,i]<-table_nmds$stress
 
       }
+
+      cat("Mean stress value after 20 iterations with k =",i, "is", apply(stress[i],2, mean),"\n")
+      cat("\n")
     }
 
     mean_stress<-as.matrix(apply(stress,2, mean))
@@ -82,7 +86,11 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   cat("Performing NMDS transformation with",k, "components.")
   cat("\n")
 
-  sample_nmds <- monoMDS(sample.pair.diss.mat, k=k, model="global")
+  sample_nmds <- monoMDS(sample.pair.diss.mat, k=k, model="global", maxit = 1000)
+
+  print(sample_nmds$stress)
+
+  stressplot(sample_nmds)
 
   if(output=="n"){
 
