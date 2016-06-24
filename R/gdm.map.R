@@ -1,6 +1,6 @@
 gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm function
                     predMap,       # Data frame that has the same predictior variables as used for gdm model building
-                    model,     # gdm.model
+                    model,         # gdm.model
                     output="m",    # type of output: "n" NMDS model object
                     #                 "p" NMDS transformed prediction map as data frame
                     #                 "m" NMDS transformed prediction map as raster object (provide R raster object)
@@ -39,7 +39,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
 
   # predict dissimilarities for sample pairs
   sample.pair <- spData
-  sample.pair.diss<-predict.gdm(gdm.model, sample.pair)
+  sample.pair.diss<-predict.gdm(model, sample.pair)
 
   #sample.pair.diss.mat<-as.data.frame(sample.pair.diss)
 
@@ -135,7 +135,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
 
 
   # predict dissimilarities for map sample site table based on gdm model
-  map.sample.pair.diss <- predict.gdm(gdm.model, map.sample.pair)
+  map.sample.pair.diss <- predict.gdm(model, map.sample.pair)
 
   # prepare predictions for NMDS transformation
   prediction.map <- matrix(map.sample.pair.diss, ncol=nrow(envdata), byrow=TRUE)
