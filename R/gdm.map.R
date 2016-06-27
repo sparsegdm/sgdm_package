@@ -8,10 +8,24 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
                     k=0,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
                     t=0.1)         # NMDS stress value threshold to extract number of components if k is not specified
 {
+
+  # check if all necessray packages are installed
+  if (!"gdm" %in% installed.packages()){
+    stop("Package 'gdm' must be installed!")
+  }
+  if (!"vegan" %in% installed.packages()){
+    stop("Package 'vegan' must be installed!")
+  }
+  if (!"raster" %in% installed.packages()){
+    stop("Package 'raster' must be installed!")
+  }
+
+  # load necessary libraries
   require(vegan)
   require(gdm)
   require(raster)
 
+  # Check if raster stack is provided for map output.
   if(output=="m"){
 
     rst.check<-class(rst)
@@ -27,11 +41,6 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   cat("Starting beta diversity map prediction.")
   cat("\n")
 
-  # function to derive map a gdm model output as
-  # a) a NMDS transformed data frame
-  # b) a raster image
-
-
   # derive information about input data
   pairs <- nrow(spData)
   n2 <- (1+sqrt(1+8*pairs))/2
@@ -45,7 +54,6 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   colnames(first_sample)<-names
   colnames(envdata_)<-names
   envdata<-rbind(first_sample, envdata_)
-  #dummy <- matrix(data=0, nrow=nrow(envdata), ncol=1)
 
 
   # predict dissimilarities for sample pairs
@@ -66,6 +74,11 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
     cat("\n")
 
     # derive k for NMDS based on 20 iterations and all possible components
+    # stress: > 0.05 excellent
+    #         > 0.1  great
+    #         > 0.2  good/ok
+    #         > 0.3  poor
+
     stress<-matrix(nrow=20,ncol=nrow(sample.pair.diss.mat))
     stress<-as.data.frame(stress)
 
@@ -117,11 +130,10 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   # Extract scores from NMDS model
   nmds_scores <- as.matrix(scores(sample_nmds))
 
-  ####### here could be a potential output if just nmds should be extracted
-
   # prepare sample/map site pair table
 
   # check if both input data fit each other
+
   cat("\n")
   cat("Checking consistency of environmental map and sample data: ")
 
@@ -157,10 +169,13 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   map.sample.pair.diss <- predict.gdm(model, map.sample.pair)
 
   # prepare predictions for NMDS transformation
-  prediction.map <- matrix(map.sample.pair.diss, ncol=nrow(envdata), byrow=TRUE)
+  prediction.map <- matrix(map.sample.pair.diss, ncol=nrow(envdata), byrow=FALSE)
 
   # transform map sample site table predictions to NMDS components
   map_trans <- prediction.map %*% nmds_scores
+
+  names(map_trans) <- c(paste0("NMDS_",1:(ncol(map_trans))))
+
 
   if(output == "p"){
 
@@ -172,18 +187,42 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
 
   }
 
+  # derive raster extent from input and assign values to single raster layers
 
-  rst_1<-raster(rst, layer=1)
-  rst_2<-raster(rst, layer=1)
-  rst_3<-raster(rst, layer=1)
-  nmds_1<-map_trans[,1]
-  nmds_2<-map_trans[,2]
-  nmds_3<-map_trans[,3]
-  values(rst_1)<-nmds_1
-  values(rst_2)<-nmds_2
-  values(rst_3)<-nmds_3
 
-  nmds_map<-stack(rst_1,rst_2,rst_3)
+  for (i in 1:ncol(map_trans)){
+
+    # create base raster and assign the first NMDS component values
+    if(i == 1){
+
+      nmds_map<-raster(image.rst, layer=1)
+
+      values(nmds_map)<-map_trans[,1]
+      name_1<-colnames(map_trans)
+      names(nmds_map)<-name_1[1]
+
+    }else{
+
+      # add raster layers with following NMDS values assigned
+      rst<- paste("rst", i, sep = "")
+      assign(rst, raster(image.rst, layer=1))
+
+      nmds<- paste("nmds", i, sep = "")
+      assign(nmds, as.matrix(map_trans[,i]))
+
+      nmds_values<-get(nmds)
+      rst_temp<-get(rst)
+
+      values(rst_temp)<-nmds_values
+
+      names(rst_temp)<-name_1[i]
+
+      # stack NMDS component raster layers
+      nmds_map<-stack(nmds_map,rst_temp)
+
+    }
+
+  }
 
   plotRGB(nmds_map, r=1, g=2, b=3, stretch="hist")
 
