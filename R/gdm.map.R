@@ -4,7 +4,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
                     output="m",    # type of output: "n" NMDS model object
                                    #                 "p" NMDS transformed prediction map as data frame
                                    #                 "m" NMDS transformed prediction map as raster object (provide R raster object)
-                    rst,           # R raster object with extent of the prediction map
+                    rst=list(),    # R raster object with extent of the prediction map
                     k=0,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
                     t=0.1)         # NMDS stress value threshold to extract number of components if k is not specified
 {
@@ -30,9 +30,9 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
 
     rst.check<-class(rst)
 
-    if(rst.check != "raster"){
+    if(rst.check != "RasterStack"){
 
-      stop("R raster object needed for map output.Provide predMap as raster stack.")
+      stop("R raster object needed for map output. Provide predMap as RasterStack.")
 
     }
   }
@@ -97,6 +97,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
       cat("\n")
     }
 
+
     mean_stress<-as.matrix(apply(stress,2, mean))
     plot(mean_stress, main="Mean NMDS stress values out of 20 iterations")
     k<- as.numeric(length(which(mean_stress>t)))
@@ -112,7 +113,9 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
 
   sample_nmds <- monoMDS(sample.pair.diss.mat, k=k, model="global", maxit = 1000)
 
-  print(sample_nmds$stress)
+  cat("\n")
+  cat("NMDS stress value:",sample_nmds$stress)
+  cat("\n")
 
   stressplot(sample_nmds)
 
@@ -180,7 +183,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   if(output == "p"){
 
     cat("\n")
-    cat("Done with dissimilaritiy prediction and NMDS transformation. Output type R dataFrame.")
+    cat("Done with dissimilarity prediction and NMDS transformation. Output type R dataFrame.")
     cat("\n")
 
     return(map_trans)
@@ -195,7 +198,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
     # create base raster and assign the first NMDS component values
     if(i == 1){
 
-      nmds_map<-raster(image.rst, layer=1)
+      nmds_map<-raster(rst, layer=1)
 
       values(nmds_map)<-map_trans[,1]
       name_1<-colnames(map_trans)
@@ -204,14 +207,14 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
     }else{
 
       # add raster layers with following NMDS values assigned
-      rst<- paste("rst", i, sep = "")
-      assign(rst, raster(image.rst, layer=1))
+      nmds_rst<- paste("nmds_rst", i, sep = "")
+      assign(nmds_rst, raster(rst, layer=1))
 
       nmds<- paste("nmds", i, sep = "")
       assign(nmds, as.matrix(map_trans[,i]))
 
       nmds_values<-get(nmds)
-      rst_temp<-get(rst)
+      rst_temp<-get(nmds_rst)
 
       values(rst_temp)<-nmds_values
 
@@ -229,7 +232,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   if(output == "m"){
 
     cat("\n")
-    cat("Done with dissimilaritiy prediction and NMDS transformation. Output type R Raster object.")
+    cat("Done with dissimilarity prediction and NMDS transformation. Output type R RasterStack.")
     cat("\n")
 
     return(nmds_map)
