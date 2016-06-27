@@ -12,6 +12,17 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   require(gdm)
   require(raster)
 
+  if(output=="m"){
+
+    rst.check<-class(rst)
+
+    if(rst.check != "raster"){
+
+      stop("R raster object needed for map output.Provide predMap as raster stack.")
+
+    }
+  }
+
   cat("\n")
   cat("Starting beta diversity map prediction.")
   cat("\n")
