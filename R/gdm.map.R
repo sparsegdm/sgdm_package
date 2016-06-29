@@ -99,8 +99,8 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
 
 
     mean_stress<-as.matrix(apply(stress,2, mean))
-    plot(mean_stress, main="Mean NMDS stress values out of 20 iterations")
-    k<- as.numeric(length(which(mean_stress>t)))
+    # plot(mean_stress, main="Mean NMDS stress values out of 20 iterations")
+    k<- as.numeric(length(which(mean_stress>t))+1)
 
 
   }
@@ -117,7 +117,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   cat("NMDS stress value:",sample_nmds$stress)
   cat("\n")
 
-  stressplot(sample_nmds)
+  # stressplot(sample_nmds)
 
   if(output=="n"){
 
@@ -227,7 +227,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
 
   }
 
-  plotRGB(nmds_map, r=1, g=2, b=3, stretch="hist")
+  plot(nmds_map)
 
   if(output == "m"){
 
