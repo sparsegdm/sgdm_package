@@ -1,11 +1,7 @@
 gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm function
                     predMap,       # Data frame that has the same predictior variables as used for gdm model building
                     model,         # gdm.model
-                    output="m",    # type of output: "n" NMDS model object
-                                   #                 "p" NMDS transformed prediction map as data frame
-                                   #                 "m" NMDS transformed prediction map as raster object (provide R raster object)
-                    rst=list(),    # R raster object with extent of the prediction map
-                    k=0,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
+                    k=3,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
                     t=0.1)         # NMDS stress value threshold to extract number of components if k is not specified
 {
 
@@ -25,113 +21,136 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   require(gdm)
   require(raster)
 
+
+        cat("\n")
+        cat("Starting beta diversity map prediction.")
+        cat("\n")
+
+        # derive information about input data
+        pairs <- nrow(spData)
+        n2 <- (1+sqrt(1+8*pairs))/2
+        nVars<-(ncol(spData)-6)/2
+        dummy_ID<-data.frame(ID=1:n2)
+
+        # derive envdata from ipnut table
+        first_sample<-cbind(dummy_ID[1,1], spData[1,3:4], spData[1,7:(nVars+6)])
+        envdata_ <- cbind(dummy_ID[2:n2,1],spData[1:(n2-1),5:6],spData[1:(n2-1),(nVars+7):ncol(spData)])
+        names<-c("ID","X","Y", paste0("Pred.", 1:(nVars)))
+        colnames(first_sample)<-names
+        colnames(envdata_)<-names
+        envdata<-rbind(first_sample, envdata_)
+
+
+        # predict dissimilarities for sample pairs
+        sample.pair <- spData
+        sample.pair.diss<-predict.gdm(model, sample.pair)
+
+        #sample.pair.diss.mat<-as.data.frame(sample.pair.diss)
+
+        X <- diag(x=0, nrow(envdata),nrow(envdata))
+        X[upper.tri(X, diag=FALSE)] <- sample.pair.diss
+        X <- X + t(X) - diag(diag(X))
+
+        sample.pair.diss.mat<-as.matrix(X)
+
+              if (k == 0){
+                cat("\n")
+                cat("Derive number of NMDS components based on stress values below" ,t, "\n")
+                cat("\n")
+
+                # derive k for NMDS based on 20 iterations and all possible components
+                # stress: > 0.05 excellent
+                #         > 0.1  great
+                #         > 0.2  good/ok
+                #         > 0.3  poor
+
+                stress<-matrix(nrow=20,ncol=nrow(sample.pair.diss.mat))
+                stress<-as.data.frame(stress)
+
+                for (i in 1:nrow(sample.pair.diss.mat)){
+                  for (j in 1:20){
+
+                    table_nmds <- monoMDS(sample.pair.diss.mat, k=i, model ="global", maxit=1000)
+
+                    # Stress values of model
+                    # stressplot(table_nmds)
+                    stress[j,i]<-table_nmds$stress
+
+                  }
+
+                  cat("Mean stress value after 20 iterations with k =",i, "is", apply(stress[i],2, mean),"\n")
+                  cat("\n")
+                }
+
+
+          mean_stress<-as.matrix(apply(stress,2, mean))
+          # plot(mean_stress, main="Mean NMDS stress values out of 20 iterations")
+          k<- as.numeric(length(which(mean_stress>t))+1)
+
+
+        }
+
+        # Perform NMDS on sample dissimialirites
+
+        cat("\n")
+        cat("Performing NMDS transformation with",k, "components.")
+        cat("\n")
+
+        sample_nmds <- monoMDS(sample.pair.diss.mat, k=k, model="global", maxit = 1000)
+
+        cat("\n")
+        cat("NMDS stress value:",sample_nmds$stress)
+        cat("\n")
+
+        # stressplot(sample_nmds)
+
+
+        # Extract scores from NMDS model
+        nmds_scores <- as.matrix(scores(sample_nmds))
+
+        # calculate nmds components for predicted sample dissimilarities
+        #sample.sample<-matrix(sample.pair.diss, ncol=nrow(envdata), byrow=FALSE)
+        sample_nmds_comp<-sample.pair.diss.mat %*% nmds_scores
+
   # Check if raster stack is provided for map output.
-  if(output=="m"){
+  if (missing(predMap)){
 
-    rst.check<-class(rst)
+    return(sample_nmds_comp)
 
-    if(rst.check != "RasterStack"){
+  }else
 
-      stop("R raster object needed for map output. Provide predMap as RasterStack.")
+    data.type.check<-class(predMap)
 
-    }
-  }
+      if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer" ){
 
-  cat("\n")
-  cat("Starting beta diversity map prediction.")
-  cat("\n")
+        cat("\n")
+        cat("predMap is a raster object and will be transformed to a matrix.")
+        cat("\n")
 
-  # derive information about input data
-  pairs <- nrow(spData)
-  n2 <- (1+sqrt(1+8*pairs))/2
-  nVars<-(ncol(spData)-6)/2
-  dummy_ID<-data.frame(ID=1:n2)
+        rst<-predMap
 
-  # derive envdata from ipnut table
-  first_sample<-cbind(dummy_ID[1,1], spData[1,3:4], spData[1,7:(nVars+6)])
-  envdata_ <- cbind(dummy_ID[2:n2,1],spData[1:(n2-1),5:6],spData[1:(n2-1),(nVars+7):ncol(spData)])
-  names<-c("ID","X","Y", paste0("Pred.", 1:(nVars)))
-  colnames(first_sample)<-names
-  colnames(envdata_)<-names
-  envdata<-rbind(first_sample, envdata_)
+        image.df <- as.data.frame(predMap)
+        rst.ID <- matrix(nrow = nrow(image.df), ncol = 1, data = c(1:nrow(image.df)))
+
+        # create image subset and transform to spatialPointsDF to derive XY coordinates
+        # img.sub<-subset(rst,1)
+        # coords<-rasterToPoints(img.sub)
+        # names(img.sub.df)<-c("x","y","1")
+        # x<-coords[,1]
+        # y<-coords[,2]
+
+        # using dummy xy coordinates
+        x <- matrix(nrow = nrow(image.df), ncol = 1, data = 0)
+        y <- matrix(nrow = nrow(image.df), ncol = 1, data = 0)
 
 
-  # predict dissimilarities for sample pairs
-  sample.pair <- spData
-  sample.pair.diss<-predict.gdm(model, sample.pair)
+        image<-as.data.frame(cbind(rst.ID,x,y,image.df))
 
-  #sample.pair.diss.mat<-as.data.frame(sample.pair.diss)
-
-  X <- diag(x=0, nrow(envdata),nrow(envdata))
-  X[upper.tri(X, diag=FALSE)] <- sample.pair.diss
-  X <- X + t(X) - diag(diag(X))
-
-  sample.pair.diss.mat<-as.matrix(X)
-
-  if (k == 0){
-    cat("\n")
-    cat("Derive number of NMDS components based on stress values below" ,t, "\n")
-    cat("\n")
-
-    # derive k for NMDS based on 20 iterations and all possible components
-    # stress: > 0.05 excellent
-    #         > 0.1  great
-    #         > 0.2  good/ok
-    #         > 0.3  poor
-
-    stress<-matrix(nrow=20,ncol=nrow(sample.pair.diss.mat))
-    stress<-as.data.frame(stress)
-
-    for (i in 1:nrow(sample.pair.diss.mat)){
-      for (j in 1:20){
-
-        table_nmds <- monoMDS(sample.pair.diss.mat, k=i, model ="global", maxit=1000)
-
-        # Stress values of model
-        # stressplot(table_nmds)
-        stress[j,i]<-table_nmds$stress
+        names.mt <- as.list(c("ID","x","y", paste0("MapPred.", 1:(ncol(image.df)))))
+        colnames(image) <- names.mt
+        predMap<-as.matrix(image)
 
       }
-
-      cat("Mean stress value after 20 iterations with k =",i, "is", apply(stress[i],2, mean),"\n")
-      cat("\n")
-    }
-
-
-    mean_stress<-as.matrix(apply(stress,2, mean))
-    # plot(mean_stress, main="Mean NMDS stress values out of 20 iterations")
-    k<- as.numeric(length(which(mean_stress>t))+1)
-
-
-  }
-
-  # Perform NMDS on sample dissimialirites
-
-  cat("\n")
-  cat("Performing NMDS transformation with",k, "components.")
-  cat("\n")
-
-  sample_nmds <- monoMDS(sample.pair.diss.mat, k=k, model="global", maxit = 1000)
-
-  cat("\n")
-  cat("NMDS stress value:",sample_nmds$stress)
-  cat("\n")
-
-  # stressplot(sample_nmds)
-
-  if(output=="n"){
-
-    cat("\n")
-    cat("Done with NMDS transformation of the predicted sample dissimilarities. Output type R monoMDS object.")
-    cat("\n")
-
-    return(sample_nmds)
-
-  }
-
-
-  # Extract scores from NMDS model
-  nmds_scores <- as.matrix(scores(sample_nmds))
 
   # prepare sample/map site pair table
 
@@ -145,9 +164,9 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   n.sites <- nrow(envdata)
   weight<-1
 
-  if (j1 != j3){
-    stop("Map and samples not consistent, check input data!\n")
-  }
+    if (j1 != j3){
+      stop("Map and samples not consistent, check input data!\n")
+    }
 
   cat("Data check OK!\n")
   cat("\n")
@@ -180,15 +199,15 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   names(map_trans) <- c(paste0("NMDS_",1:(ncol(map_trans))))
 
 
-  if(output == "p"){
+    if(data.type.check == "matrix" || data.type.check == "data.frame") {
 
-    cat("\n")
-    cat("Done with dissimilarity prediction and NMDS transformation. Output type R dataFrame.")
-    cat("\n")
+      cat("\n")
+      cat("Done with dissimilarity prediction and NMDS transformation. Output type R dataFrame.")
+      cat("\n")
 
-    return(map_trans)
+      return(map_trans)
 
-  }
+    }
 
   # derive raster extent from input and assign values to single raster layers
 
@@ -223,20 +242,20 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
       # stack NMDS component raster layers
       nmds_map<-stack(nmds_map,rst_temp)
 
+      plot(nmds_map)
+
     }
 
   }
 
-  plot(nmds_map)
+      if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer" ){
 
-  if(output == "m"){
+        cat("\n")
+        cat("Done with dissimilarity prediction and NMDS transformation. Output type R RasterStack.")
+        cat("\n")
 
-    cat("\n")
-    cat("Done with dissimilarity prediction and NMDS transformation. Output type R RasterStack.")
-    cat("\n")
+        return(nmds_map)
 
-    return(nmds_map)
-
-  }
+      }
 
 }
