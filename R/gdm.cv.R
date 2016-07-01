@@ -17,10 +17,14 @@ gdm.cv <-
     # requires gdm
     #
 
-    # data reading and dependencies configuration
 
+    # checking dependencies
+    if (!"gdm" %in% installed.packages()){
+      stop("Package 'gdm' must be installed!")
+    }
+
+    # data reading and dependencies configuration
     require(gdm)
-    # require(vegan)
 
     pairs <- nrow(spData)
     n2 <- (1+sqrt(1+8*pairs))/2
@@ -49,7 +53,6 @@ gdm.cv <-
         colnames(perf.test) = c("observed", "predicted")
 
         # selecting sample to hold out
-
         a <- 1                #1 at start
         s2 <- t2              #n-1 at start
 
@@ -79,11 +82,9 @@ gdm.cv <-
           observed <- as.data.frame(valdata[,1])
 
           # running partial model
-
           partial.gdm <- gdm(caldata, geo = geo)
 
           # calculating predicted dissimilarities for partial model
-
           predicted <- predict(partial.gdm,valdata)
           predicted <- as.data.frame(predicted)
 
@@ -131,18 +132,15 @@ gdm.cv <-
           }
 
           # defining calibration and validation datasets
-
           caldata <- spData[which(index.sel==1),]
           valdata <- spData[which(index.sel==0),]
 
           observed <- as.data.frame(valdata[,1])
 
           # running partial model
-
           partial.gdm <- gdm(caldata, geo = geo)
 
           # calculating predicted dissimilarities for partial model
-
           predicted <- predict(partial.gdm,valdata)
           predicted <- as.data.frame(predicted)
 
@@ -179,10 +177,6 @@ gdm.cv <-
         cat("\n")
         performance <- sqrt(mean((perf.test[,1]-perf.test[,2])^2))
       }
-
-      # else{
-      #   stop("Invalid data type!")
-      # }
 
       cat("Model performance calculated\n")
       cat("\n")

@@ -17,11 +17,17 @@ sgdm.train <-
     # delivers performance matrix with RMSE values for each SCCA penalization parameter pair
     #
 
-    # dependencies
+    # checking dependencies
+    if (!"gdm" %in% installed.packages()){
+      stop("Package 'gdm' must be installed!")
+    }
+    if (!"PMA" %in% installed.packages()){
+      stop("Package 'PMA' must be installed!")
+    }
 
+    # data reading and dependencies configuration
+    require(gdm)
     require(PMA)
-
-    # data reading
 
     cat("\n")
     cat("Running SGDM model paramerization\n")
@@ -44,18 +50,15 @@ sgdm.train <-
     bc <- length(env.penalization)
 
     # creating output performance matrix
-
-    perfmatrix <- matrix(ncol = bc, nrow = br, data = 0)
-    rownames(perfmatrix) = bio.penalization
-    colnames(perfmatrix) = env.penalization
+    perf.matrix <- matrix(ncol = bc, nrow = br, data = 0)
+    rownames(perf.matrix) = bio.penalization
+    colnames(perf.matrix) = env.penalization
 
     # creating performance test
-
     perf.test <- matrix (ncol = 2, nrow = pairc, data = 0)
     colnames(perf.test) = c("observed", "predicted")
 
     # initialising grid search of SCCA penalization parameters
-
     cat("Grid search for setting SCCA penalization:\n")
 
     for (px in bio.penalization) for (pz in env.penalization) {
@@ -65,37 +68,29 @@ sgdm.train <-
       cat("SCCA Model:\n")
 
       # running SCCA
-
       cca <- CCA(r, p, typex="standard",typez="standard", penaltyx=px,
                  penaltyz=pz, K=comps, niter=50, v=NULL, trace=TRUE, standardize=TRUE,
                  xnames=NULL, znames=NULL)
 
       # extracting canonical vectors
-
       v <- cca$v
 
       # tranforming environmental data into canonical components
-
       c <- p %*% v
       cgi <- cbind(id,latlong,c)
       cgi <- as.data.frame(cgi)
       colnames(cgi)[1]<- "Plot_ID"
 
       # compiling dataset
-
-      # cdata <- data.read(cgi,biodata,metric=metric)
-
-      cdata <- formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
+      spData <- formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
                               siteColumn = "Plot_ID", XColumn="X",YColumn="Y",
                               predData = cgi)
 
       # calulating GDM model performance
-
-      performance <- gdm.cv(cdata,nfolds=5,metric=metric,geo=geo)
+      performance <- gdm.cv(spData,nfolds=5,metric=metric,geo=geo)
 
       # feeding performance matrix
-
-      perfmatrix[paste(px), paste(pz)] <- performance
+      perf.matrix[paste(px), paste(pz)] <- performance
     }
 
     cat("\n")
@@ -103,5 +98,5 @@ sgdm.train <-
     cat("Finished SGDM parameterization: performance raster created\n")
     cat("\n")
 
-    return(perfmatrix)
+    return(perf.matrix)
   }

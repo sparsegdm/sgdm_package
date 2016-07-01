@@ -1,6 +1,6 @@
 data.reduce <-
   function(data,            # data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined (sitepair) dataset
-           datatype = "sp", # type of data to reduce: "sp"= site pair; or "pred"= environmental predictor
+           datatype = "sp", # type of data to reduce: "sp"= site pair; or "pred"= environmental predictors
            sigtest)         # predictor variable contribution significance test, as output by gdm.varsig
   {
 

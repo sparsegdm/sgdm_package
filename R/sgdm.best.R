@@ -1,11 +1,11 @@
 sgdm.best <-
-  function(grid.matrix,       # performance matrix as output from sgdm.grid
+  function(perf.matrix,       # performance matrix as output from sgdm.grid
            predData,          # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
            bioData,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           output = "g",      # type of output: "g" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; default = gdm model
+           output = "m",      # type of output: "m" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; default = gdm model
            comps = 10,        # number of sparce canonical components to be calculated, set as 10 per default
-           metric="bray",     # only needed if output = "g"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
-           geo = F)           # only needed if output = "g"; optional use of geographical distance as predictor in GDM model, set as FALSE per default
+           metric="bray",     # only needed if output = "m"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
+           geo = F)           # only needed if output = "m"; optional use of geographical distance as predictor in GDM model, set as FALSE per default
 
       {
 
@@ -18,11 +18,17 @@ sgdm.best <-
     # delivers GDM model, sparse canonical components or vectors, extracted with parameter pair with respective best performance
     #
 
-    # dependencies
+    # checking dependencies
+    if (!"gdm" %in% installed.packages()){
+      stop("Package 'gdm' must be installed!")
+    }
+    if (!"PMA" %in% installed.packages()){
+      stop("Package 'PMA' must be installed!")
+    }
 
+    # data reading and dependencies configuration
+    require(gdm)
     require(PMA)
-
-    # data reading
 
     cat("Retrieving sparse canonical components corresponding to the best SGDM model after parameterization\n")
     cat("\n")
@@ -35,9 +41,9 @@ sgdm.best <-
 
     # reading SCCA parameterization from performance matrix
 
-    min.index<-arrayInd(which.min(grid.matrix),dim(grid.matrix))
-    rname <- as.numeric(rownames(grid.matrix)[min.index[1]])
-    cname <- as.numeric(colnames(grid.matrix)[min.index[2]])
+    min.index<-arrayInd(which.min(perf.matrix),dim(perf.matrix))
+    rname <- as.numeric(rownames(perf.matrix)[min.index[1]])
+    cname <- as.numeric(colnames(perf.matrix)[min.index[2]])
 
     # running SCCA
 
@@ -72,23 +78,21 @@ sgdm.best <-
       return (cgi)
       }
 
-      if (output == "g") {
+      if (output == "m") {
         # compiling data
 
-        psData <- data.read(cgi,bioData,metric=metric)
+        spData <- formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
+                                 siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
+                                 predData = cgi)
 
         # running GDM model
 
-        gdm.mod <- gdm(psData,geo=geo)
+        gdm.mod <- gdm(spData,geo=geo)
 
         cat("Best SGDM model created\n")
         cat("\n")
 
         return (gdm.mod)
-      }
-
-      else{
-        stop("Invalid output type!")
       }
     }
   }

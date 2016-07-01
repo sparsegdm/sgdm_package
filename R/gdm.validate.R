@@ -16,6 +16,14 @@ gdm.validate <-
     # requires gdm
     #
 
+    # checking dependencies
+    if (!"gdm" %in% installed.packages()){
+      stop("Package 'gdm' must be installed!")
+    }
+
+    # dependencies configuration
+    require(gdm)
+
     # fitting  model
 
     model <- gdm(caldata, geo = geo)
