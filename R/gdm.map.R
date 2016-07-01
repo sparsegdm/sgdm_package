@@ -31,7 +31,7 @@ gdm.map <- function(spData,        # Site pair table as from Formatsitetable gdm
   predData0 <- cbind(dummy_ID[2:n2,1],spData[1:(n2-1),5:6],spData[1:(n2-1),(nVars+7):ncol(spData)])
   names<-c("ID","X","Y", paste0("Pred.", 1:(nVars)))
   colnames(first_sample)<-names
-  colnames(predData_)<-names
+  colnames(predData0)<-names
   predData<-rbind(first_sample, predData0)
 
   cat("\n")
