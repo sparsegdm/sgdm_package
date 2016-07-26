@@ -3,9 +3,9 @@ gdm.cv <-
            nfolds=10,              # number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
            metric="bray",          # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)
            performance="rmse",     # performance metric to be used ("rmse" or "r2"), set as "rmse" per default
+           uncertainty = F,        # calculate standard deviation of residuals to assess uncertainty
            geo = F)                # optional use of geographical distance as predictor in GDM model set as FALSE per default
   {
-
     # v.1
     #
     # p. j. leitao - 6th May 2016
@@ -16,7 +16,6 @@ gdm.cv <-
     #
     # requires gdm
     #
-
 
     # checking dependencies
     if (!"gdm" %in% installed.packages()){
@@ -181,6 +180,15 @@ gdm.cv <-
       cat("Model performance calculated\n")
       cat("\n")
 
-      return (performance)
+      stdev <- sd(perf.test[,1]-perf.test[,2])
+      result <- cbind(performance,stdev)
+
+      if (uncertainty == F) {
+        return (result[1])
+      }
+
+      if (uncertainty == T) {
+        return (result)
+      }
     }
   }
