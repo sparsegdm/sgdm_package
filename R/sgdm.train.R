@@ -54,15 +54,6 @@ sgdm.train <-
     rownames(perf.matrix) = bio.penalization
     colnames(perf.matrix) = env.penalization
 
-    # creating performance uncertainty matrix
-    stdev.matrix <- matrix(ncol = bc, nrow = br, data = 0)
-    rownames(stdev.matrix) = bio.penalization
-    colnames(stdev.matrix) = env.penalization
-
-    # # creating performance test
-    # perf.test <- matrix (ncol = 2, nrow = pairc, data = 0)
-    # colnames(perf.test) = c("observed", "predicted")
-
     # initialising grid search of SCCA penalization parameters
     cat("Grid search for setting SCCA penalization:\n")
 
@@ -92,23 +83,11 @@ sgdm.train <-
                               predData = cgi)
 
       # calulating GDM model performance
-      result <- gdm.cv(spData,nfolds=5,metric=metric,uncertainty=T,geo=geo)
+      result <- gdm.cv(spData,nfolds=5,metric=metric,geo=geo)
 
       # feeding performance matrix
       perf.matrix[paste(px), paste(pz)] <- result[1]
-
-      # feeding uncertainty matrix
-      stdev.matrix[paste(px), paste(pz)] <- result[2]
     }
-
-    min.index<-arrayInd(which.min(perf.matrix),dim(perf.matrix))
-    perf <- perf.matrix[min.index[1],min.index[2]]
-    stdev <- stdev.matrix[min.index[1],min.index[2]]
-
-    cat("\n")
-    cat(paste("Testing - Performance is",perf,"and standard deviation is",stdev,"\n"))
-    cat("\n")
-
 
     cat("\n")
     cat("\n")
