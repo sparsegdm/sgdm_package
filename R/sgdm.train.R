@@ -3,8 +3,8 @@ sgdm.train <-
            bioData,                           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
            comps = 10,                        # number of sparce canonical components to be calculated, set as 10 per default
            metric = "bray",                   # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default
-           env.penalization = seq(0, 1, 0.1), # vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
-           bio.penalization = seq(0, 1, 0.1), # vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
+           predPenalization = seq(0.6, 1, 0.1), # vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
+           bioPenalization = seq(0.6, 1, 0.1), # vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
            geo = F)                           # optional use of geographical distance as predictor in GDM model, set as FALSE per default
   {
 
@@ -46,20 +46,20 @@ sgdm.train <-
     r <- as.matrix(bioData[,2:j2])
     p <- as.matrix(predData[,4:j1])
 
-    br <- length(bio.penalization)
-    bc <- length(env.penalization)
+    br <- length(bioPenalization)
+    bc <- length(predPenalization)
 
     # creating output performance matrix
     perf.matrix <- matrix(ncol = bc, nrow = br, data = 0)
-    rownames(perf.matrix) = bio.penalization
-    colnames(perf.matrix) = env.penalization
+    rownames(perf.matrix) = bioPenalization
+    colnames(perf.matrix) = predPenalization
 
     # initialising grid search of SCCA penalization parameters
     cat("Grid search for setting SCCA penalization:\n")
 
-    for (px in bio.penalization) for (pz in env.penalization) {
+    for (px in bioPenalization) for (pz in predPenalization) {
       cat("\n")
-      cat(paste("Penalization on species data (x) =",px,"; penalization on environmental data (y) =",pz,"\n"))
+      cat(paste("Penalization on biological data (x) =",px,"; penalization on predcitor data (y) =",pz,"\n"))
       cat("\n")
       cat("SCCA Model:\n")
 
