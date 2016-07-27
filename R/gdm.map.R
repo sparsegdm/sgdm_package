@@ -16,8 +16,8 @@
 gdm.map<- function(spData,        # site pair table as from formatsitetable function in gdm package
                    predMap,       # Raster object with the same set of predictior variables as used for gdm model building; if no raster object is provided NMDS scores will be returned as data.frame.
                    model,         # gdm.model
-                   k=3,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
-                   t=0.1)         # NMDS stress value threshold to extract number of components if k is not specified
+                   k = 3,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
+                   t = 0.1)         # NMDS stress value threshold to extract number of components if k is not specified
 {
   # v.1
   #
@@ -124,7 +124,7 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
   cat("\n")
 
   # Extract scores from NMDS model
-  nmds_scores <- as.matrix(scores(sample_nmds))
+  nmds_scores <- as.matrix(vegan::scores(sample_nmds))
 
   # Check if raster stack is provided for map output.
   if (missing(predMap)){

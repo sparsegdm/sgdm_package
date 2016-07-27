@@ -85,7 +85,7 @@ gdm.cv <-
           observed <- as.data.frame(valdata[,1])
 
           # running partial model
-          partial.gdm <- gdm(caldata, geo = geo)
+          partial.gdm <- gdm::gdm(caldata, geo = geo)
 
           # calculating predicted dissimilarities for partial model
           predicted <- predict(partial.gdm,valdata)

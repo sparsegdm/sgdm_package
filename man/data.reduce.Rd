@@ -11,7 +11,7 @@ data.reduce(data, datatype = "sp", sigtest)
 
 \item{datatype}{Type of data to reduce: \code{sp} for site pair or \code{pred} for environmental predictors}
 
-\item{sigtest}{Predictor variable contribution significance test, as output by \code{\link{gdm.varcont}}}
+\item{sigtest}{Predictor variable contribution significance test, as output by ...}
 }
 \value{
 Returns reduced environmental data matrix

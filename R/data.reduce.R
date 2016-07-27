@@ -2,7 +2,7 @@
 #' @description ...
 #' @param data Data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined Site pair table as from formatsitetable function in gdm package
 #' @param datatype Type of data to reduce: \code{sp} for site pair or \code{pred} for environmental predictors
-#' @param sigtest Predictor variable contribution significance test, as output by \code{\link{gdm.varcont}}
+#' @param sigtest Predictor variable contribution significance test, as output by ...
 #' @return Returns reduced environmental data matrix
 #' @export
 
@@ -27,8 +27,8 @@ data.reduce <-
       cat("\n")
 
       # spData.sigtest <- rbind(as.matrix(as.logical(c("T","T","T","T","T","T"))),sigtest,sigtest)
-      spData.sigtest0 <- append(as.logical(c("T","T","T","T","T","T")),sigtest.sgdm)
-      spData.sigtest <- append(spData.sigtest0, sigtest.sgdm)
+      spData.sigtest0 <- append(as.logical(c("T","T","T","T","T","T")), sigtest)
+      spData.sigtest <- append(spData.sigtest0, sigtest)
       new.data <- data[,spData.sigtest]
     }
 
@@ -37,7 +37,7 @@ data.reduce <-
       cat("\n")
 
       # predData.sigtest <- rbind(as.matrix(as.logical(c("T","T","T"))),sigtest)
-      predData.sigtest <- append(as.logical(c("T","T","T")),sigtest.sgdm)
+      predData.sigtest <- append(as.logical(c("T","T","T")),sigtest)
       new.data <- data[,predData.sigtest]
     }
 

@@ -17,3 +17,4 @@ Suggests: knitr,
 VignetteBuilder: knitr
 Imports: gdm,
     PMA
+Depends: R (>= 3.1.0)
