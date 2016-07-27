@@ -5,8 +5,6 @@
 #' @param performance Performance metric to be used ("rmse" or "r2"), set as "r2" per default
 #' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
 #' @return Returns model performance value
-#' @examples
-#' gdm.validate(...)
 #' @export
 
 gdm.validate <-
@@ -27,13 +25,8 @@ gdm.validate <-
     # requires gdm
     #
 
-    # checking dependencies
-    if (!"gdm" %in% installed.packages()){
-      stop("Package 'gdm' must be installed!")
-    }
-
     # dependencies configuration
-    require(gdm)
+    #require(gdm)
 
     # fitting  model
 

@@ -18,7 +18,4 @@ ABC
 \description{
 Function to perform n-fold cross-validation of gdm model
 }
-\examples{
-gdm.cv(...)
-}
 

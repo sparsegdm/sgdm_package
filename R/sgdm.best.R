@@ -8,8 +8,6 @@
 #' @param metric Only needed if output = "m"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
 #' @param geo only needed if output = "m"; optional use of geographical distance as predictor in GDM model, set as FALSE per default
 #' @return Returns GDM model, sparse canonical components, or sparse canonical vectors (default is \code{output = "m"}, which returns a GDM model object)
-#' @examples
-#' sgdm.best(...)
 #' @export
 
 sgdm.best <-
@@ -32,17 +30,9 @@ sgdm.best <-
     # delivers GDM model, sparse canonical components or vectors, extracted with parameter pair with respective best performance
     #
 
-    # checking dependencies
-    if (!"gdm" %in% installed.packages()){
-      stop("Package 'gdm' must be installed!")
-    }
-    if (!"PMA" %in% installed.packages()){
-      stop("Package 'PMA' must be installed!")
-    }
-
     # data reading and dependencies configuration
-    require(gdm)
-    require(PMA)
+    #require(gdm)
+    #require(PMA)
 
     cat("Retrieving sparse canonical components corresponding to the best SGDM model after parameterization\n")
     cat("\n")

@@ -21,7 +21,4 @@ Returns ...
 \description{
 Function for ...
 }
-\examples{
-predData.transform(...)
-}
 

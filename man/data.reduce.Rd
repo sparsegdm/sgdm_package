@@ -19,7 +19,4 @@ Returns reduced environmental data matrix
 \description{
 Function for reducing environmental data based on significance test of GDM predictor variable contributions
 }
-\examples{
-data.reduce(...)
-}
 

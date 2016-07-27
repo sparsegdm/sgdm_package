@@ -5,8 +5,6 @@
 #' @param perf.matrix ...
 #' @param comps ...
 #' @return Returns ...
-#' @examples
-#' predData.transform(...)
 #' @export
 
 predData.transform <-
@@ -16,13 +14,8 @@ predData.transform <-
            comps = 10)
   {
 
-    # checking dependencies
-    if (!"PMA" %in% installed.packages()){
-      stop("Package 'PMA' must be installed!")
-    }
-
     # data reading and dependencies configuration
-    require(PMA)
+    #require(PMA)
 
     j1 <- ncol(predData)
     j2 <- ncol(bioData)

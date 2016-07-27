@@ -4,8 +4,6 @@
 #' @param datatype Type of data to reduce: \code{sp} for site pair or \code{pred} for environmental predictors
 #' @param sigtest Predictor variable contribution significance test, as output by \code{\link{gdm.varsig}}
 #' @return Returns reduced environmental data matrix
-#' @examples
-#' data.reduce(...)
 #' @export
 
 data.reduce <-

@@ -17,7 +17,4 @@ Returns variable contribution in percentage
 \description{
 Function to calculate predictor variable drop contributions on GDM model
 }
-\examples{
-gdm.varcont(...)
-}
 

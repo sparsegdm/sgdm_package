@@ -28,7 +28,4 @@ Returns GDM model, sparse canonical components, or sparse canonical vectors (def
 \description{
 Function to retrieve the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SCCA parameter estimation using sgdm.gridsearch
 }
-\examples{
-sgdm.best(...)
-}
 

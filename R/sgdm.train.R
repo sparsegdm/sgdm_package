@@ -8,8 +8,6 @@
 #' @param bioPenalization Vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
 #' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
 #' @return Returns performance matrix with RMSE values for each SCCA penalization parameter pair
-#' @examples
-#' sgdm.train(...)
 #' @export
 
 sgdm.train <-
@@ -31,17 +29,9 @@ sgdm.train <-
     # delivers performance matrix with RMSE values for each SCCA penalization parameter pair
     #
 
-    # checking dependencies
-    if (!"gdm" %in% installed.packages()){
-      stop("Package 'gdm' must be installed!")
-    }
-    if (!"PMA" %in% installed.packages()){
-      stop("Package 'PMA' must be installed!")
-    }
-
     # data reading and dependencies configuration
-    require(gdm)
-    require(PMA)
+    #require(gdm)
+    #require(PMA)
 
     cat("\n")
     cat("Running SGDM model paramerization\n")

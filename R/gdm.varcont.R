@@ -3,8 +3,6 @@
 #' @param spData Compiled dataset as output from "data.read" function
 #' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
 #' @return Returns variable contribution in percentage
-#' @examples
-#' gdm.varcont(...)
 #' @export
 
 gdm.varcont <-
@@ -23,13 +21,8 @@ gdm.varcont <-
     # requires gdm
     #
 
-    # checking dependencies
-    if (!"gdm" %in% installed.packages()){
-      stop("Package 'gdm' must be installed!")
-    }
-
     # data reading and dependencies configuration
-    require(gdm)
+    #require(gdm)
 
     cat("Calculating GDM model variable contributions\n")
     cat("\n")

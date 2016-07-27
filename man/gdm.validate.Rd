@@ -21,7 +21,4 @@ Returns model performance value
 \description{
 Function to calculate predictor variable drop contributions on GDM model
 }
-\examples{
-gdm.validate(...)
-}
 

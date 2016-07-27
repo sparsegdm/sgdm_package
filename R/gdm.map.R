@@ -9,8 +9,6 @@
 #' @param k number of resulting NMDS components (default = 3); if k = 0 number of components will be derived using a mean NMDS stress value threshold (t) after 20 iterations of NMDS using all given predictor variables.
 #' @param t NMDS stress value threshold (default = 0.1).
 #' @return NMDS object with k number of components based on gdm predicted sample pair dissimilarities if no raster is provided; NMDS raster map with k number of layers.
-#' @examples
-#' gdm.map(...)
 #' @export
 
 
@@ -32,25 +30,11 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
   # requires gdm, vegan, raster and yaImpute
   #
 
-  # checking dependencies
-  if (!"gdm" %in% installed.packages()){
-    stop("Package 'gdm' must be installed!")
-  }
-  if (!"vegan" %in% installed.packages()){
-    stop("Package 'vegan' must be installed!")
-  }
-  if (!"raster" %in% installed.packages()){
-    stop("Package 'raster' must be installed!")
-  }
-  if (!"yaImpute" %in% installed.packages()){
-    stop("Package 'yaImpute' must be installed!")
-  }
-
   # data reading and dependencies configuration
-  require(vegan)
-  require(gdm)
-  require(yaImpute)
-  require(raster)
+  #require(vegan)
+  #require(gdm)
+  #require(yaImpute)
+  #require(raster)
 
   pairs <- nrow(spData)
   n2 <- (1+sqrt(1+8*pairs))/2

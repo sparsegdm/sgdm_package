@@ -29,7 +29,4 @@ Returns performance matrix with RMSE values for each SCCA penalization parameter
 \description{
 Function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
 }
-\examples{
-sgdm.train(...)
-}
 

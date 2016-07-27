@@ -3,8 +3,6 @@
 #' @param spData Compiled dataset as output from "format.site.pair" function
 #' @param nfolds Number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
 #' @return ABC
-#' @examples
-#' gdm.cv(...)
 #' @export
 
 gdm.cv <-
@@ -25,13 +23,8 @@ gdm.cv <-
     # requires gdm
     #
 
-    # checking dependencies
-    if (!"gdm" %in% installed.packages()){
-      stop("Package 'gdm' must be installed!")
-    }
-
     # data reading and dependencies configuration
-    require(gdm)
+    #require(gdm)
 
     pairs <- nrow(spData)
     n2 <- (1+sqrt(1+8*pairs))/2

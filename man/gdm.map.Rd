@@ -26,7 +26,4 @@ Function to predict dissimilarities between sample site pairs using a gdm model.
              If a raster object with the same set of predictor variables as used for gdm model building is provided, the transformed
              dissimilarities will be mapped using k-nearest neighbor imputation.
 }
-\examples{
-gdm.map(...)
-}
 
