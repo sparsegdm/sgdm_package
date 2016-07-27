@@ -1,3 +1,17 @@
+#' Function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
+#'
+#' @param predData Environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+#' @param bioData Biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+#' @param comps Number of sparce canonical components to be calculated, set as 10 per default
+#' @param metric Dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default
+#' @param predPenalization Vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)
+#' @param bioPenalization Vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)
+#' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
+#' @return Returns performance matrix with RMSE values for each SCCA penalization parameter pair
+#' @examples
+#' sgdm.train(...)
+#' @export
+
 sgdm.train <-
   function(predData,                          # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
            bioData,                           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
