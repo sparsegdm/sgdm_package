@@ -1,3 +1,17 @@
+#' Function to retrieve the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SCCA parameter estimation using sgdm.gridsearch
+#'
+#' @param perf.matrix Performance matrix as output from sgdm.grid
+#' @param predData Environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+#' @param bioData Biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+#' @param output Type of output: "m" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; default = gdm model
+#' @param comps Number of sparce canonical components to be calculated, set as 10 per default
+#' @param metric Only needed if output = "m"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
+#' @param geo only needed if output = "m"; optional use of geographical distance as predictor in GDM model, set as FALSE per default
+#' @return Returns GDM model, sparse canonical components, or sparse canonical vectors (default is \code{output = "m"}, which returns a GDM model object)
+#' @examples
+#' sgdm.best(...)
+#' @export
+
 sgdm.best <-
   function(perf.matrix,       # performance matrix as output from sgdm.grid
            predData,          # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot

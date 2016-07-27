@@ -5,7 +5,7 @@
 \title{Function to perform n-fold cross-validation of gdm model}
 \usage{
 gdm.cv(spData, nfolds = 10, metric = "bray", performance = "rmse",
-  uncertainty = F, geo = F)
+  geo = F)
 }
 \arguments{
 \item{spData}{Compiled dataset as output from "format.site.pair" function}

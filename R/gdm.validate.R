@@ -1,7 +1,18 @@
+#' Function to calculate predictor variable drop contributions on GDM model
+#'
+#' @param caldata Calibration data
+#' @param valdata Validation data
+#' @param performance Performance metric to be used ("rmse" or "r2"), set as "r2" per default
+#' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
+#' @return Returns model performance value
+#' @examples
+#' gdm.validate(...)
+#' @export
+
 gdm.validate <-
   function(caldata,                # calibration data
            valdata,                # validation data
-           performance="r2",       # performance metric to be used ("rmse" or "r2"), set as "r2" per default
+           performance = "r2",     # performance metric to be used ("rmse" or "r2"), set as "r2" per default
            geo = F)                # optional use of geographical distance as predictor in GDM model set as FALSE per default
   {
 

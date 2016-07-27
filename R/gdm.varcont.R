@@ -1,3 +1,12 @@
+#' Function to calculate predictor variable drop contributions on GDM model
+#'
+#' @param spData Compiled dataset as output from "data.read" function
+#' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
+#' @return Returns variable contribution in percentage
+#' @examples
+#' gdm.varcont(...)
+#' @export
+
 gdm.varcont <-
   function(spData,              # compiled dataset as output from "data.read" function
            geo = FALSE)         # optional use of geographical distance as predictor in GDM model, set as FALSE per default
