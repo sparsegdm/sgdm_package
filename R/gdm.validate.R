@@ -1,5 +1,5 @@
-#' Function to calculate predictor variable drop contributions on GDM model
-#'
+#' @title Function to calculate predictor variable drop contributions on GDM model
+#' @description ...
 #' @param caldata Calibration data
 #' @param valdata Validation data
 #' @param performance Performance metric to be used ("rmse" or "r2"), set as "r2" per default
@@ -30,11 +30,11 @@ gdm.validate <-
 
     # fitting  model
 
-    model <- gdm(caldata, geo = geo)
+    model <- gdm::gdm(caldata, geo = geo)
 
     # calculating predicted dissimilarities for partial model
 
-    predicted <- predict.gdm(model,valdata)
+    predicted <- gdm::predict.gdm(model,valdata)
     predicted <- as.data.frame(predicted)
 
     # calculating model performance

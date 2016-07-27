@@ -13,8 +13,8 @@
 
 
 
-gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm function
-                   predMap,       # Data frame that has the same predictior variables as used for gdm model building
+gdm.map<- function(spData,        # site pair table as from formatsitetable function in gdm package
+                   predMap,       # Raster object with the same set of predictior variables as used for gdm model building; if no raster object is provided NMDS scores will be returned as data.frame.
                    model,         # gdm.model
                    k=3,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
                    t=0.1)         # NMDS stress value threshold to extract number of components if k is not specified
@@ -30,6 +30,21 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
   # requires gdm, vegan, raster and yaImpute
   #
 
+  if (!requireNamespace("raster", quietly = TRUE)) {
+    stop("raster package needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+  if (!requireNamespace("vegan", quietly = TRUE)) {
+    stop("vegan package needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+  if (!requireNamespace("yaImpute", quietly = TRUE)) {
+    stop("yaImpute package needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
   # data reading and dependencies configuration
   #require(vegan)
   #require(gdm)
@@ -38,16 +53,16 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
 
   pairs <- nrow(spData)
   n2 <- (1+sqrt(1+8*pairs))/2
-  nVars<-(ncol(spData)-6)/2
-  dummy_ID<-data.frame(ID=1:n2)
+  nVars <- (ncol(spData)-6)/2
+  dummy_ID <- data.frame(ID=1:n2)
 
   # derive predData from input spData
-  first_sample<-cbind(dummy_ID[1,1], spData[1,3:4], spData[1,7:(nVars+6)])
+  first_sample <- cbind(dummy_ID[1,1], spData[1,3:4], spData[1,7:(nVars+6)])
   predData0 <- cbind(dummy_ID[2:n2,1],spData[1:(n2-1),5:6],spData[1:(n2-1),(nVars+7):ncol(spData)])
-  names<-c("ID","X","Y", paste0("Pred.", 1:(nVars)))
-  colnames(first_sample)<-names
-  colnames(predData0)<-names
-  predData<-rbind(first_sample, predData0)
+  names <- c("ID","X","Y", paste0("Pred.", 1:(nVars)))
+  colnames(first_sample) <- names
+  colnames(predData0) <- names
+  predData <- rbind(first_sample, predData0)
 
   cat("\n")
   cat("Performing gdm mapping\n")
@@ -55,7 +70,7 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
 
   # predict dissimilarities for sample pairs
   sample.pair <- spData
-  sample.pair.diss<-predict.gdm(model, sample.pair)
+  sample.pair.diss <- gdm::predict.gdm(model, sample.pair)
 
   #sample.pair.diss.mat<-as.data.frame(sample.pair.diss)
 
@@ -81,7 +96,7 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
 
     for (i in 1:nrow(sample.pair.diss.mat)){
       for (j in 1:20){
-        table_nmds <- monoMDS(sample.pair.diss.mat, k=i, model ="global", maxit=1000)
+        table_nmds <- vegan::monoMDS(sample.pair.diss.mat, k=i, model ="global", maxit=1000)
 
         # Stress values of model
         # stressplot(table_nmds)
@@ -102,7 +117,7 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
   cat("Performing NMDS transformation on sample pair sites with",k, "components\n")
   cat("\n")
 
-  sample_nmds <- monoMDS(sample.pair.diss.mat, k=k, model="global", maxit = 1000)
+  sample_nmds <- vegan::monoMDS(sample.pair.diss.mat, k=k, model="global", maxit = 1000)
 
   cat("\n")
   cat("NMDS stress value:",sample_nmds$stress)
@@ -122,14 +137,14 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
 
     if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer" ){
       cat("\n")
-      cat("predMap is data type", data.type.check, "and will be used to impute the NMDS transformed gdm dissimilarity predictions \n")
+      cat("predMap is data type ", data.type.check, " and will be used to impute the NMDS transformed gdm dissimilarity predictions \n")
       cat("\n")
 
-      image.df <- as.data.frame(predMap, xy=TRUE)
+      image.df <- raster::as.data.frame(predMap, xy=TRUE)
       image.df <- cbind(1:nrow(image.df), image.df)
 
       # check data consistency between predData and predMap
-      if(nlayers(predMap)!= nVars) stop("Raster image must have same numbers of layers as numbers of predictors!")
+      if(raster::nlayers(predMap)!= nVars) stop("Raster image must have same numbers of layers as numbers of predictors!")
 
       names(image.df) <- c("ID", "X", "Y", paste0("Pred.", 1:(nVars)))
 
@@ -140,27 +155,27 @@ gdm.map<- function(spData,       # Site pair table as from Formatsitetable gdm f
       rownames(imputation.df) <- paste0("I", 1:nrow(imputation.df))
 
       # Create Imputation model
-      impute_model <- yai(x = imputation.df[,(k+4):ncol(imputation.df)], y = imputation.df[,1:k], method = "euclidean")
+      impute_model <- yaImpute::yai(x = imputation.df[,(k+4):ncol(imputation.df)], y = imputation.df[,1:k], method = "euclidean")
 
       # apply model to new image pixel
-      impute_model_image <- newtargets(impute_model, image.df[, 4:ncol(image.df)])
+      impute_model_image <- yaImpute::newtargets(impute_model, image.df[, 4:ncol(image.df)])
 
       # impute image
-      impute_image <- impute(impute_model_image)
+      impute_image <- yaImpute::impute(impute_model_image)
 
       # create list of NMDS counts
       r_list <- vector("list", length = k)
 
       # prepare raster for each NMDS component
       for(i in 1:k){
-        r <- subset(predMap, 1)
-        values(r) <- impute_image[,i]
+        r <- raster::subset(predMap, 1)
+        raster::values(r) <- impute_image[,i]
         names(r) <- names(impute_image)[i]
         r_list[[i]] <- r
       }
 
       # stack NMDS raster
-      impute_map <- stack(r_list)
+      impute_map <- raster::stack(r_list)
 
 
     }

@@ -7,7 +7,7 @@
 gdm.varcont(spData, geo = FALSE)
 }
 \arguments{
-\item{spData}{Compiled dataset as output from "data.read" function}
+\item{spData}{Site pair table as from formatsitetable function in gdm package}
 
 \item{geo}{Optional use of geographical distance as predictor in GDM model, set as FALSE per default}
 }
@@ -15,6 +15,6 @@ gdm.varcont(spData, geo = FALSE)
 Returns variable contribution in percentage
 }
 \description{
-Function to calculate predictor variable drop contributions on GDM model
+...
 }
 

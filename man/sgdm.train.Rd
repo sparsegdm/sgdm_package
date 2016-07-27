@@ -27,6 +27,6 @@ sgdm.train(predData, bioData, comps = 10, metric = "bray",
 Returns performance matrix with RMSE values for each SCCA penalization parameter pair
 }
 \description{
-Function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
+...
 }
 

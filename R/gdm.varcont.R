@@ -1,12 +1,12 @@
-#' Function to calculate predictor variable drop contributions on GDM model
-#'
-#' @param spData Compiled dataset as output from "data.read" function
+#' @title Function to calculate predictor variable drop contributions on GDM model
+#' @description ...
+#' @param spData Site pair table as from formatsitetable function in gdm package
 #' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
 #' @return Returns variable contribution in percentage
 #' @export
 
 gdm.varcont <-
-  function(spData,              # compiled dataset as output from "data.read" function
+  function(spData,              # site pair table as from formatsitetable function in gdm package
            geo = FALSE)         # optional use of geographical distance as predictor in GDM model, set as FALSE per default
   {
 
@@ -40,7 +40,7 @@ gdm.varcont <-
 
     # calculating full model
 
-    gdm.mod <- gdm(spData, geo=geo)
+    gdm.mod <- gdm::gdm(spData, geo=geo)
 
     # iteratively dropping each variable and calculating its drop contribution
 
@@ -49,7 +49,7 @@ gdm.varcont <-
       i2 <- h+l1+6
       dvdata <- spData[,-i2]
       dvdata <- dvdata[,-i1]
-      contribs[h,1]<- (gdm.mod$explained) - ((assign(paste("gdm.drop.",h, sep=""), gdm(dvdata, geo = geo)))$explained)
+      contribs[h,1]<- (gdm.mod$explained) - ((assign(paste("gdm.drop.",h, sep=""), gdm::gdm(dvdata, geo = geo)))$explained)
     }
 
     # filling ouput object

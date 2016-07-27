@@ -1,5 +1,5 @@
-#' Function to retrieve the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SCCA parameter estimation using sgdm.gridsearch
-#'
+#' @title Function to retrieve the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SCCA parameter estimation using sgdm.gridsearch
+#' @description ...
 #' @param perf.matrix Performance matrix as output from sgdm.grid
 #' @param predData Environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
 #' @param bioData Biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
@@ -16,7 +16,7 @@ sgdm.best <-
            bioData,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
            output = "m",      # type of output: "m" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; default = gdm model
            comps = 10,        # number of sparce canonical components to be calculated, set as 10 per default
-           metric="bray",     # only needed if output = "m"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
+           metric = "bray",     # only needed if output = "m"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
            geo = F)           # only needed if output = "m"; optional use of geographical distance as predictor in GDM model, set as FALSE per default
 
       {
@@ -51,7 +51,7 @@ sgdm.best <-
 
     # running SCCA
 
-    cca.best <- CCA(bioData[,2:j2], predData[,4:j1], typex="standard",typez="standard", penaltyx=cname,
+    cca.best <- PMA::CCA(bioData[,2:j2], predData[,4:j1], typex="standard",typez="standard", penaltyx=cname,
                     penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
                     xnames=NULL, znames=NULL)
 
@@ -85,13 +85,13 @@ sgdm.best <-
       if (output == "m") {
         # compiling data
 
-        spData <- formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
+        spData <- gdm::formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
                                  siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
                                  predData = cgi)
 
         # running GDM model
 
-        gdm.mod <- gdm(spData,geo=geo)
+        gdm.mod <- gdm::gdm(spData,geo=geo)
 
         cat("Best SGDM model created\n")
         cat("\n")

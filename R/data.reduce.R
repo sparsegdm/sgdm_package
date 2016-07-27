@@ -1,13 +1,13 @@
-#' Function for reducing environmental data based on significance test of GDM predictor variable contributions
-#'
-#' @param data Data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined (sitepair) dataset
+#' @title Function for reducing environmental data based on significance test of GDM predictor variable contributions
+#' @description ...
+#' @param data Data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined Site pair table as from formatsitetable function in gdm package
 #' @param datatype Type of data to reduce: \code{sp} for site pair or \code{pred} for environmental predictors
-#' @param sigtest Predictor variable contribution significance test, as output by \code{\link{gdm.varsig}}
+#' @param sigtest Predictor variable contribution significance test, as output by \code{\link{gdm.varcont}}
 #' @return Returns reduced environmental data matrix
 #' @export
 
 data.reduce <-
-  function(data,            # data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined (sitepair) dataset
+  function(data,            # data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined Site pair table as from formatsitetable function in gdm package
            datatype = "sp", # type of data to reduce: "sp"= site pair; or "pred"= environmental predictors
            sigtest)         # predictor variable contribution significance test, as output by gdm.varsig
   {

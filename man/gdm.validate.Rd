@@ -19,6 +19,6 @@ gdm.validate(caldata, valdata, performance = "r2", geo = F)
 Returns model performance value
 }
 \description{
-Function to calculate predictor variable drop contributions on GDM model
+...
 }
 

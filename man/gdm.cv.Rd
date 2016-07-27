@@ -8,14 +8,20 @@ gdm.cv(spData, nfolds = 10, metric = "bray", performance = "rmse",
   geo = F)
 }
 \arguments{
-\item{spData}{Compiled dataset as output from "format.site.pair" function}
+\item{spData}{Site pair table as from formatsitetable function in gdm package}
 
 \item{nfolds}{Number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation}
+
+\item{metric}{Dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)}
+
+\item{performance}{Performance metric to be used ("rmse" or "r2"), set as "rmse" per default}
+
+\item{geo}{Optional use of geographical distance as predictor in GDM model set as FALSE per default}
 }
 \value{
-ABC
+Returns model performance value
 }
 \description{
-Function to perform n-fold cross-validation of gdm model
+...
 }
 

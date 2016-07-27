@@ -26,6 +26,6 @@ sgdm.best(perf.matrix, predData, bioData, output = "m", comps = 10,
 Returns GDM model, sparse canonical components, or sparse canonical vectors (default is \code{output = "m"}, which returns a GDM model object)
 }
 \description{
-Function to retrieve the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SCCA parameter estimation using sgdm.gridsearch
+...
 }
 

@@ -1,12 +1,15 @@
-#' Function to perform n-fold cross-validation of gdm model
-#'
-#' @param spData Compiled dataset as output from "format.site.pair" function
+#' @title Function to perform n-fold cross-validation of gdm model
+#' @description ...
+#' @param spData Site pair table as from formatsitetable function in gdm package
 #' @param nfolds Number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
-#' @return ABC
+#' @param metric Dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)
+#' @param performance Performance metric to be used ("rmse" or "r2"), set as "rmse" per default
+#' @param geo Optional use of geographical distance as predictor in GDM model set as FALSE per default
+#' @return Returns model performance value
 #' @export
 
 gdm.cv <-
-  function(spData,                 # compiled dataset as output from "data.read" function
+  function(spData,                 # site pair table as from formatsitetable function in gdm package
            nfolds=10,              # number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
            metric="bray",          # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)
            performance="rmse",     # performance metric to be used ("rmse" or "r2"), set as "rmse" per default
@@ -138,10 +141,10 @@ gdm.cv <-
           observed <- as.data.frame(valdata[,1])
 
           # running partial model
-          partial.gdm <- gdm(caldata, geo = geo)
+          partial.gdm <- gdm::gdm(caldata, geo = geo)
 
           # calculating predicted dissimilarities for partial model
-          predicted <- predict(partial.gdm,valdata)
+          predicted <- gdm::predict.gdm(partial.gdm,valdata)
           predicted <- as.data.frame(predicted)
 
           t3 <- nrow(valdata)

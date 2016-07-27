@@ -1,5 +1,5 @@
-#' Function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
-#'
+#' @title Function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)
+#' @description ...
 #' @param predData Environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
 #' @param bioData Biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
 #' @param comps Number of sparce canonical components to be calculated, set as 10 per default
@@ -68,7 +68,7 @@ sgdm.train <-
       cat("SCCA Model:\n")
 
       # running SCCA
-      cca <- CCA(r, p, typex="standard",typez="standard", penaltyx=px,
+      cca <- PMA::CCA(r, p, typex="standard",typez="standard", penaltyx=px,
                  penaltyz=pz, K=comps, niter=50, v=NULL, trace=TRUE, standardize=TRUE,
                  xnames=NULL, znames=NULL)
 
@@ -82,7 +82,7 @@ sgdm.train <-
       colnames(cgi)[1]<- "Plot_ID"
 
       # compiling dataset
-      spData <- formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
+      spData <- gdm::formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
                               siteColumn = "Plot_ID", XColumn="X",YColumn="Y",
                               predData = cgi)
 

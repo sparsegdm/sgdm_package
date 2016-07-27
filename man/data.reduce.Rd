@@ -7,16 +7,16 @@
 data.reduce(data, datatype = "sp", sigtest)
 }
 \arguments{
-\item{data}{Data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined (sitepair) dataset}
+\item{data}{Data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined Site pair table as from formatsitetable function in gdm package}
 
 \item{datatype}{Type of data to reduce: \code{sp} for site pair or \code{pred} for environmental predictors}
 
-\item{sigtest}{Predictor variable contribution significance test, as output by \code{\link{gdm.varsig}}}
+\item{sigtest}{Predictor variable contribution significance test, as output by \code{\link{gdm.varcont}}}
 }
 \value{
 Returns reduced environmental data matrix
 }
 \description{
-Function for reducing environmental data based on significance test of GDM predictor variable contributions
+...
 }
 
