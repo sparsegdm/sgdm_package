@@ -26,7 +26,6 @@ data.reduce <-
       cat("Reducing compiled dataset following significance test result\n")
       cat("\n")
 
-      # spData.sigtest <- rbind(as.matrix(as.logical(c("T","T","T","T","T","T"))),sigtest,sigtest)
       spData.sigtest0 <- append(as.logical(c("T","T","T","T","T","T")), sigtest)
       spData.sigtest <- append(spData.sigtest0, sigtest)
       new.data <- data[,spData.sigtest]
@@ -36,14 +35,9 @@ data.reduce <-
       cat("Reducing environmental dataset following significance test result\n")
       cat("\n")
 
-      # predData.sigtest <- rbind(as.matrix(as.logical(c("T","T","T"))),sigtest)
       predData.sigtest <- append(as.logical(c("T","T","T")),sigtest)
       new.data <- data[,predData.sigtest]
     }
-
-    # else{
-    #   stop("Invalid data type!")
-    # }
 
     cat("Data reduction finished\n")
     cat("\n")
