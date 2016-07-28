@@ -1,6 +1,6 @@
 gdm.varsig <-
-  function(envdata,         # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           biodata,         # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
+  function(predData,        # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
+           bioData,         # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
            metric = "bray", # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
            geo = F,         # optional use of geographical distance as predictor in GDM model, set as FALSE per default
            perm = 100,      # number of matrix permutations, set as 100 per default
@@ -24,25 +24,24 @@ gdm.varsig <-
 
     # data reading
 
-    j2 <- ncol(biodata)
-    # biodata10000 <- cbind(biodata[,1],(trunc(biodata[,2:j2]*10000)))
-    # colnames(biodata10000)[1]<-colnames(biodata)[1]
+    j2 <- ncol(bioData)
 
-    cdata <- data.read(envdata,biodata,metric=metric)
-    # cdata <- data.read(envdata,biodata10000,metric=metric)
+    spData <- formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
+                             siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
+                             predData = predData)
 
     cat("Testing for significance of GDM model variable contributions\n")
     cat("\n")
 
-    l1 <- (ncol(cdata)-6)/2
+    l1 <- (ncol(spData)-6)/2
 
-    j2 <- ncol(biodata)
-    n2 <- nrow(biodata)
+    j2 <- ncol(bioData)
+    n2 <- nrow(bioData)
 
     w <- perm
     w1 <- w+1
 
-    # creating variable contrveibution matrix
+    # creating variable contribution matrix
 
     contribs <- matrix(0,l1,w1)
 
@@ -52,8 +51,7 @@ gdm.varsig <-
     cat("Performing species matrix permutations\n")
     cat("\n")
 
-    bio.m <- as.matrix(biodata[,2:j2])
-    # bio.m <- as.matrix(biodata10000[,2:j2])
+    bio.m <- as.matrix(bioData[,2:j2])
     bio.perm <- permatfull(bio.m, fixedmar = "row", times = w)
 
     perm.m <- matrix(0,w,1)
@@ -63,7 +61,7 @@ gdm.varsig <-
     cat("Running original GDM model and calculating variable contributions\n")
     cat("\n")
 
-    contribs[,1] <- gdm.varcont(cdata, geo = geo)
+    contribs[,1] <- gdm.varcont(spData, geo = geo)
 
     # calculating variable contributions of permuted models
 
@@ -76,7 +74,7 @@ gdm.varsig <-
 
       q <- t+1
       dist <- vegdist(as.data.frame(bio.perm$perm[t]), method=metric)
-      pdata <- cdata
+      pdata <- spData
       pdata[,1] <- dist
 
       contribs[,q] <- gdm.varcont(pdata, geo = geo)
