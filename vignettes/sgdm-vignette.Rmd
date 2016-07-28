@@ -1,58 +1,126 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "sgdm: an R package for performing sparse generalized dissimilarity modeling, with tools for gdm"
+author: "Pedro J. Leitão, Marcel Schwieder, Cornelius Senf"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{sgdm-vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+## Introduction
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+## Installing the model
 
 ```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+#library(devtools)
+#devtools::install_git(...)
+library(sgdm)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+## Test data
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r}
+head(bioData)
 ```
 
-Also a quote using `>`:
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+```{r}
+head(predData)
+```
+
+## Running a `sgdm` model
+
+Train model...
+
+```{r}
+sgdm.gs <- sgdm.train(predData, bioData, comps = 30)
+```
+
+Returns a performance matrix...
+
+```{r}
+print(sgdm.gs, digits = 4)
+```
+
+Extract best...
+
+```{r}
+sgdm.sccbest <- sgdm.best(sgdm.gs, predData, bioData, output = "c", comps = 30)
+```
+
+Create spData from best...
+
+```{r}
+spData.best <- gdm::formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
+               siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
+               predData = sgdm.sccbest)
+```
+
+Retrain model...
+
+```{r}
+sgdm.model <- gdm::gdm(spData.best)
+```
+
+Model diagnostics
+
+```{r}
+sgdm.model$explained
+```
+
+```{r}
+plot(sgdm.model$predicted, sgdm.model$observed,xlim = c(0, 1), ylim = c(0, 1))
+abline(0, 1)
+```
+
+```{r}
+(cor(sgdm.model$predicted, sgdm.model$observed)^2) * 100
+```
+
+Evaluate model performance
+
+```{r}
+gdm.cv(spData.best, nfolds = 10)
+```
+
+Using $r^2$
+
+```{r}
+gdm.cv(spData.best, nfolds = 10, performance = "r2")
+```
+
+Reduce model by dropping insignificant varaibles
+
+```{r}
+#sigtest.sgdm <- gdm::gdm.varImp(spData.best, geo = FALSE, fullModelOnly = TRUE, nPerm = 100, 
+#                                parallel = TRUE, cores = 6)
+```
+
+```{r}
+#sigtest.sgdm <- sigtest.sgdm[[2]][, 1] <= 0.05
+```
+
+
+```{r}
+#spData.red.best <- data.reduce(spData.best, datatype = "sp", sigtest.sgdm)
+```
+
+## Making spatial predictions
+
+There is a spatial map of the predictors...
+
+```{r}
+raster::plotRGB(predMap, r = 20, g = 10, b = 2, stretch = "hist")
+```
+
+Output map
+
+```{r}
+spData <- gdm::formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
+               siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
+               predData = predData)
+
+nmds_map <- gdm.map(spData = spData, predMap = predMap, model = sgdm.model, k = 5)
+```

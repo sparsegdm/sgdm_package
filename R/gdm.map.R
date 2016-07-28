@@ -135,7 +135,7 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
   else{
     data.type.check<-class(predMap)
 
-    if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer" ){
+    if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer"){
       cat("\n")
       cat("predMap is data type ", data.type.check, " and will be used to impute the NMDS transformed gdm dissimilarity predictions \n")
       cat("\n")
