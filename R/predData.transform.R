@@ -22,7 +22,7 @@ predData.transform <-
 
     if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer"){
       cat("\n")
-      cat("predMap is data type ", data.type.check, " and will be converted to data frame \n")
+      cat("predData is data type ", data.type.check,"\n")
       cat("\n")
 
       # save raster for output
@@ -59,7 +59,7 @@ predData.transform <-
         r_list[[i]] <- r
       }
 
-      # stack NMDS raster
+      # stack component raster
       predData.new<- raster::stack(r_list)
     }
 

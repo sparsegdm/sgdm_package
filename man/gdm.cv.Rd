@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdm.cv.R
 \name{gdm.cv}
 \alias{gdm.cv}
-\title{Function to perform n-fold cross-validation of gdm model}
+\title{Performs n-fold cross-validation of gdm model}
 \usage{
 gdm.cv(spData, nfolds = 10, metric = "bray", performance = "rmse",
   geo = F)

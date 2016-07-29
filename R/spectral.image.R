@@ -2,4 +2,4 @@
 #' @description ...
 #' @format A raster stack with 83 layers:
 #' @source \url{??? Is there a source paper?}
-"predMap"
+"spectral.image"

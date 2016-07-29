@@ -2,21 +2,25 @@
 % Please edit documentation in R/data.reduce.R
 \name{data.reduce}
 \alias{data.reduce}
-\title{Function for reducing environmental data based on significance test of GDM predictor variable contributions}
+\title{Reduces predictor data based on significance test}
 \usage{
 data.reduce(data, datatype = "sp", sigtest)
 }
 \arguments{
-\item{data}{Data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined Site pair table as from formatsitetable function in gdm package}
+\item{data}{Data to be reduced based on predictor variable significance. It can be either a predictor dataset ("predData" format) or combined site pair table ("spData" format).}
 
-\item{datatype}{Type of data to reduce: \code{sp} for site pair or \code{pred} for environmental predictors}
+\item{datatype}{Type of data to de reduced: \code{pred} for predictor data ("predData" format) or \code{sp} for site pair data ("spData" format).}
 
-\item{sigtest}{Predictor variable contribution significance test, as output by ...}
+\item{sigtest}{Predictor variable contribution significance test, as output by gdm.varsig function.}
 }
 \value{
-Returns reduced environmental data matrix
+Returns reduced environmental data in the same format as the input data.
 }
 \description{
-...
+This function reduces the predictor variables of a dataset based on the significance test, resulting from function gdm.varsig. It can be applied to either predictor or site pair datasets.
+
+abcd
+
+abc
 }
 

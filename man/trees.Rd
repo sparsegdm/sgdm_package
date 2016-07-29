@@ -4,10 +4,7 @@
 \name{bioData}
 \alias{bioData}
 \title{Biological data...}
-\format{A data frame with 30 rows and 49 variables: ...}
-\source{
-\url{??? Is there a source paper?}
-}
+\format{A data frame with 30 rows and 49 columns ...}
 \usage{
 bioData
 }

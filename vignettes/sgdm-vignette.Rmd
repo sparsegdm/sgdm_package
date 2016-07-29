@@ -1,5 +1,5 @@
 ---
-title: "sgdm: an R package for performing sparse generalized dissimilarity modeling, with tools for gdm"
+title: "sgdm: an R package for performing sparse generalized dissimilarity modeling including tools for gdm"
 author: "Pedro J. Leitão, Marcel Schwieder, Cornelius Senf"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -11,9 +11,11 @@ vignette: >
 
 ## Introduction
 
+Enter text here...
+
 ## Installing the model
 
-```{r, fig.show='hold'}
+```{r}
 #library(devtools)
 #devtools::install_git(...)
 library(sgdm)

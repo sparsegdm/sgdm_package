@@ -2,7 +2,7 @@
 % Please edit documentation in R/sgdm.best.R
 \name{sgdm.best}
 \alias{sgdm.best}
-\title{Function to retrieve the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SCCA parameter estimation using sgdm.gridsearch}
+\title{Retrieves the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SGDM parameter estimation using sgdm.train}
 \usage{
 sgdm.best(perf.matrix, predData, bioData, output = "m", comps = 10,
   metric = "bray", geo = F)
