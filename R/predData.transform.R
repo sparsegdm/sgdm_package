@@ -5,6 +5,10 @@
 #'
 #' The input data can either be provided as dataframe or raster object, which must have the same number of predictors as used for deriving the sparse canonical vectors. The output data will be delivered in the same format (dataframe or raster object) as the input.
 #'
+#' If predictor dataset is a raster object, this function requires the previous instalation of the \code{raster} package.
+#'
+#' For more details relating to "predData" and "spData" data formats, check \code{gdm} package.
+#'
 #' @param predData Predictor dataset (predData format) or as a raster object.
 #' @param v Sparse canonical vectors as extracted by \code{sgdm.best} using output = \code{"v"}.
 #' @return Returns environmental data transformed into sparse canonical components for further use with GDM. This dataset is delivered in the same format (data frame or raster object) as the input data.

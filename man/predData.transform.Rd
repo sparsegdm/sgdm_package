@@ -18,5 +18,9 @@ Returns environmental data transformed into sparse canonical components for furt
 This function transforms a predictor dataset into sparse canonical components, based on the sparse canonical vectors extracted by function \code{sgdm.best} using output = \code{"v"}.
 
 The input data can either be provided as dataframe or raster object, which must have the same number of predictors as used for deriving the sparse canonical vectors. The output data will be delivered in the same format (dataframe or raster object) as the input.
+
+If predictor dataset is a raster object, this function requires the previous instalation of the \code{raster} package.
+
+For more details relating to "predData" and "spData" data formats, check \code{gdm} package.
 }
 

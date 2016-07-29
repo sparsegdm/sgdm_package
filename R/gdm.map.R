@@ -8,7 +8,7 @@
 #'
 #' A non-metrical multidimensional scaling (NMDS) is then applied to transform the predicted dissimilarities to extract the main patterns of community composition within the sampled sites. The number of NMDS components to be extracted can be mannually defined by the user (set to 3 per default). Alternatively, if the number of desired components given is set to 0 (zero), the resulting number of components will be automatically defined based on the resulting stress values (of the NMDS) according to a set threshold \code{t} (set to 0.1 per default).
 #'
-#' It requires a It requires a combined site pair dataset ("spData" format), a GDM model object and the number of components (\code{k}) to be extracted in the NMDS. If \code{k} is set to 0 then requires the stress value threshold \code{t} for automatically defining the number of NMDS components to be extracted.
+#' It requires a combined site pair dataset ("spData" format), a GDM model object and the number of components (\code{k}) to be extracted in the NMDS. If \code{k} is set to 0 then requires the stress value threshold \code{t} for automatically defining the number of NMDS components to be extracted.
 #'
 #' If a map with predictor variables is given (either as raster object or dataframe), these will be assigned (mapped) along the NMDS axes, by comparing the map with the sampled sites (site pair data), following to a k-nearest neighbor imputation approach. The output map will be delivered in the same format as the input map. For this method to work, the input map must have exactly the same predictor variables as those used for the GDM model, and those in the site pair dataset. This option requires the previous instalation of the \code{yalmpute} package, and in case a raster object is given as input map it also requires the \code{raster} package.
 #'
@@ -58,7 +58,7 @@ gdm.map<- function(spData,
   predData <- rbind(first_sample, predData0)
 
   cat("\n")
-  cat("Performing gdm mapping\n")
+  cat("Performing GDM mapping\n")
   cat("\n")
 
   # predict dissimilarities for sample pairs

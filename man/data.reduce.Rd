@@ -21,6 +21,8 @@ This function reduces the predictor variables of a dataset based on the signific
 
 It can be applied to either predictor ("predData") or site pair ("spData") datasets.
 
+If predictor dataset is a raster object, this function requires the previous instalation of the \code{raster} package.
+
 For more details relating to "predData" and "spData" data formats, check \code{gdm} package.
 }
 

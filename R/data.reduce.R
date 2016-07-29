@@ -5,6 +5,8 @@
 #'
 #' It can be applied to either predictor ("predData") or site pair ("spData") datasets.
 #'
+#' If predictor dataset is a raster object, this function requires the previous instalation of the \code{raster} package.
+#'
 #' For more details relating to "predData" and "spData" data formats, check \code{gdm} package.
 #'
 #' @param data Data to be reduced based on predictor variable significance. It can be either a predictor dataset ("predData" format) or combined site pair table ("spData" format).
