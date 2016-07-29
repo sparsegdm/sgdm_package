@@ -1,24 +1,16 @@
-#' @title Function for reducing environmental data based on significance test of GDM predictor variable contributions
-#' @description ...
-#' @param data Data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined Site pair table as from formatsitetable function in gdm package
-#' @param datatype Type of data to reduce: \code{sp} for site pair or \code{pred} for environmental predictors
-#' @param sigtest Predictor variable contribution significance test, as output by ...
-#' @return Returns reduced environmental data matrix
+#' @title Reduces predictor data based on significance test
+#' @description This function reduces the predictor variables of a dataset based on the significance test, resulting from function gdm.varsig. It can be applied to either predictor or site pair datasets.
+#' @param data Data to be reduced based on predictor variable significance. It can be either a predictor dataset ("predData" format) or combined Site pair table ("spData" format).
+#' @param datatype Type of data to de reduced: \code{pred} for predictor data ("predData" format) or \code{sp} for site pair data ("spData" format).
+#' @param sigtest Predictor variable contribution significance test, as output by gdm.varsig function.
+#' @return Returns reduced environmental data in the same format as the input data.
 #' @export
 
 data.reduce <-
-  function(data,            # data matrix to reduce based on predictor variable significance, either biological data (type 1, without X and Y columns), environmental or combined Site pair table as from formatsitetable function in gdm package
-           datatype = "sp", # type of data to reduce: "sp"= site pair; or "pred"= environmental predictors
-           sigtest)         # predictor variable contribution significance test, as output by gdm.varsig
+  function(data,
+           datatype = "sp",
+           sigtest)
   {
-
-    #
-    # p. j. leitao - 2nd May 2016
-    #
-    # function for reducing environmental data based on significance test of GDM predictor variable contributions
-    #
-    # delivers reduced environmental data matrix
-    #
 
     # Reducing dataset
 

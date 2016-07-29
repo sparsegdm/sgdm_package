@@ -1,4 +1,4 @@
-#' @title Function to perform n-fold cross-validation of gdm model
+#' @title Performs n-fold cross-validation of gdm model
 #' @description ...
 #' @param spData Site pair table as from formatsitetable function in gdm package
 #' @param nfolds Number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation

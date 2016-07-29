@@ -1,4 +1,4 @@
-#' @title Function to retrieve the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SCCA parameter estimation using sgdm.gridsearch
+#' @title Retrieves the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SGDM parameter estimation using sgdm.train
 #' @description ...
 #' @param perf.matrix Performance matrix as output from sgdm.grid
 #' @param predData Environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
