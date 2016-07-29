@@ -2,19 +2,25 @@
 % Please edit documentation in R/gdm.varcont.R
 \name{gdm.varcont}
 \alias{gdm.varcont}
-\title{Function to calculate predictor variable drop contributions on GDM model}
+\title{Calculates predictor variable (drop) contributions in GDM model}
 \usage{
 gdm.varcont(spData, geo = FALSE)
 }
 \arguments{
-\item{spData}{Site pair table as from formatsitetable function in gdm package}
+\item{spData}{Combined site pair dataset ("spData" format).}
 
-\item{geo}{Optional use of geographical distance as predictor in GDM model, set as FALSE per default}
+\item{geo}{Optional use of geographical distance as predictor in GDM model. Set as \code{FALSE} per default}
 }
 \value{
 Returns variable contribution in percentage
 }
 \description{
-...
+This function calculates predictor variable (drop) contributions in GDM model.
+
+Variable contributions are calculated by the loss in explained deviance in the GDM model, when dropping each individual predictor variable at a time.
+
+It requires a combined site pair dataset ("spData" format) and the optional use of geographical distance as predictor variable in the GDM.
+
+For more details relating to "spData" data format, check \code{gdm} package.
 }
 

@@ -1,45 +1,36 @@
-#' @title Performs n-fold cross-validation of gdm model
+#' @title Performs n-fold cross-validation of GDM model
 #'
 #' @description
-#' This function performs n-fold cross-validation of a gdm model. It requires a combined site pair ("spData" format) dataset, as well as the definition of the
+#' This function performs n-fold cross-validation of a GDM model.
 #'
-#' @param spData Site pair table as from formatsitetable function in gdm package
-#' @param nfolds Number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
-#' @param metric Dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)
-#' @param performance Performance metric to be used ("rmse" or "r2"), set as "rmse" per default
-#' @param geo Optional use of geographical distance as predictor in GDM model set as FALSE per default
-#' @return Returns model performance value
+#' It requires a combined site pair ("spData" format) dataset, as well as the definition of the number of folds to be used in the cross-validation, the performance measure to be used and the optional use of geographical distance as predictor variable in the GDM.
+#'
+#' For more details relating to "spData" data format, check \code{gdm} package.
+#'
+#' @param spData Combined site pair dataset ("spData" format).
+#' @param nfolds Number of folds for cross-validation. Default is 10 folds. If number of folds equals number of samples then leave-one-out cross-validation is performed.
+#' @param performance Performance metric to be used for validation: \code{"rmse"} for root mean square error (RMSE) or \code{"r2"} for coefficient of determination (r2). Set as \code{"rmse"} per default.
+#' @param geo Optional use of geographical distance as predictor in GDM model. set as \code{FALSE} per default.
+#' @return Returns model performance value.
 #' @export
 
 gdm.cv <-
-  function(spData,                 # site pair table as from formatsitetable function in gdm package
-           nfolds=10,              # number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
-           metric="bray",          # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)
-           performance="rmse",     # performance metric to be used ("rmse" or "r2"), set as "rmse" per default
-           geo = F)                # optional use of geographical distance as predictor in GDM model set as FALSE per default
+  function(spData,
+           nfolds=10,
+           performance="rmse",
+           geo = F)
   {
-    # v.1
-    #
-    # p. j. leitao - 6th May 2016
-    #
-    # function to perform n-fold cross-validation of GDM model
-    #
-    # delivers model performance value
-    #
-    # requires gdm
-    #
 
-    # data reading and dependencies configuration
-    #require(gdm)
+    cat("\n")
+    cat("GDM model cross-validation\n")
+    cat("\n")
+
+    # data reading
 
     pairs <- nrow(spData)
     n2 <- (1+sqrt(1+8*pairs))/2
     t2 <- n2-1
     pairc <- n2*t2
-
-    cat("\n")
-    cat("GDM cross-validation\n")
-    cat("\n")
 
     if (nfolds > n2){
       cat("\n")

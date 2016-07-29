@@ -1,10 +1,13 @@
-#' @title Function to perform SCCA transformation of environmental data
-#' @description This function transforms the given environmental input data into sparse canonical components,
-#'              based on the sparse canonical vectors as derived from \code {sgdm.best}.Input data can either be provided
-#'              as data frame or raster object.Input data must have the same number of predictors as used for deriving the sparse canonical vectors
-#' @param predData Environmental data as data frame (Format: Plot_ID, X, Y, env.data) or as a raster object
-#' @param v.best sparse canonical vectors as out from \code {sgdm.best}
-#' @return Returns CCA transformed environmental data
+#' @title Performs SCCA transformation of environmental data
+#'
+#' @description
+#' This function transforms a predictor dataset into sparse canonical components, based on the sparse canonical vectors extracted by function \code{sgdm.best} using output = \code{"v"}.
+#'
+#' The input data can either be provided as dataframe or raster object, which must have the same number of predictors as used for deriving the sparse canonical vectors. The output data will be delivered in the same format (dataframe or raster object) as the input.
+#'
+#' @param predData Predictor dataset (predData format) or as a raster object.
+#' @param v.best Sparse canonical vectors as extracted by \code{sgdm.best} using output = \code{"v"}.
+#' @return Returns environmental data transformed into sparse canonical components for further use with GDM. This dataset is delivered in the same format (data frame or raster object) as the input data.
 #' @export
 
 predData.transform <-
@@ -16,7 +19,6 @@ predData.transform <-
       stop("raster package needed for this function to work. Please install it.",
            call. = FALSE)
     }
-
 
     data.type.check<-class(predData)
 

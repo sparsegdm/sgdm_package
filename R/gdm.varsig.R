@@ -1,45 +1,54 @@
+#' @title Calculates statistical significance of predictor variable contributions in GDM model
+#'
+#' @description
+#' This function calculates the statistical significance of predictor variable contributions in GDM model, as calculated with the \code{gdm.varcont} function.
+#'
+#' Significance is calculated through random matrix permutations, to infer if the variable (drop) contributions are greater than those obtained by chance.
+#'
+#' It requires a biological ("bioData" format) and a predictor ("spData" format) datasets, the dissimilarity metric to be used, the optional use of geographical distance as predictor variable in the GDM, the number of permutations to be run and the significance level to be tested.
+#'
+#' This current implementation only allows biological data in the format 1 using abundance values, as described in the \code{gdm} package.
+#'
+#' For more details relating to "bioData" and "predData" data formats, check \code{gdm} package.
+#'
+#' @param predData Predictor dataset ("predData" format).
+#' @param bioData Biological dataset ("bioData" format).
+#' @param metric Dissimilarity metric to be used.
+#' @param geo Optional use of geographical distance as predictor in GDM model. Set as \code{FALSE} per default
+#' @param perm Number of matrix permutations to be used for calcuating statistical significance.
+#' @param sig Significance level (p-value) to be tested. Set as 0.05 per default.
+#' @return Returns vector resulting of the significance test. Variables with significant model contributions are assigned value \code{TRUE}, and non-significant variables the value \code{FALSE}, according to the defined p-value threshold.
+#' @export
+
 gdm.varsig <-
-  function(predData,        # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           bioData,         # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           metric = "bray", # dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
-           geo = F,         # optional use of geographical distance as predictor in GDM model, set as FALSE per default
-           perm = 100,      # number of matrix permutations, set as 100 per default
-           sig = 0.05)      # significance level, set as 0.05 per default
+  function(predData,
+           bioData,
+           metric = "bray",
+           geo = F,
+           perm = 100,
+           sig = 0.05)
   {
 
-    # v.2
-    #
-    # p. j. leitao - 2nd October 2016
-    #
-    # function to test statistical significance predictor variable drop contributions on GDM model
-    #
-    # requires gdm, vegan, ecodist
-    #
-    # delivers results of significance test for each predictor variable
-    #
-
-    # dependencies
-
-    require(vegan)
+    if (!requireNamespace("raster", quietly = TRUE)) {
+      stop("raster package needed for this function to work. Please install it.",
+           call. = FALSE)
+    }
 
     # data reading
 
-    j2 <- ncol(bioData)
-
-    spData <- formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
+    spData <- gdm::formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
                              siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
                              predData = predData)
+
+    l1 <- (ncol(spData)-6)/2
+    j2 <- ncol(bioData)
+
+    w <- perm
+    w1 <- w+1
 
     cat("Testing for significance of GDM model variable contributions\n")
     cat("\n")
 
-    l1 <- (ncol(spData)-6)/2
-
-    j2 <- ncol(bioData)
-    n2 <- nrow(bioData)
-
-    w <- perm
-    w1 <- w+1
 
     # creating variable contribution matrix
 
@@ -52,7 +61,7 @@ gdm.varsig <-
     cat("\n")
 
     bio.m <- as.matrix(bioData[,2:j2])
-    bio.perm <- permatfull(bio.m, fixedmar = "row", times = w)
+    bio.perm <- vegan::permatfull(bio.m, fixedmar = "row", times = w)
 
     perm.m <- matrix(0,w,1)
 
@@ -73,7 +82,7 @@ gdm.varsig <-
       cat("\n")
 
       q <- t+1
-      dist <- vegdist(as.data.frame(bio.perm$perm[t]), method=metric)
+      dist <- vegan::vegdist(as.data.frame(bio.perm$perm[t]), method=metric)
       pdata <- spData
       pdata[,1] <- dist
 

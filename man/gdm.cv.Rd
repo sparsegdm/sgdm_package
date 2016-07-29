@@ -2,26 +2,27 @@
 % Please edit documentation in R/gdm.cv.R
 \name{gdm.cv}
 \alias{gdm.cv}
-\title{Performs n-fold cross-validation of gdm model}
+\title{Performs n-fold cross-validation of GDM model}
 \usage{
-gdm.cv(spData, nfolds = 10, metric = "bray", performance = "rmse",
-  geo = F)
+gdm.cv(spData, nfolds = 10, performance = "rmse", geo = F)
 }
 \arguments{
-\item{spData}{Site pair table as from formatsitetable function in gdm package}
+\item{spData}{Combined site pair dataset ("spData" format).}
 
-\item{nfolds}{Number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation}
+\item{nfolds}{Number of folds for cross-validation. Default is 10 folds. If number of folds equals number of samples then leave-one-out cross-validation is performed.}
 
-\item{metric}{Dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)}
+\item{performance}{Performance metric to be used for validation: \code{"rmse"} for root mean square error (RMSE) or \code{"r2"} for coefficient of determination (r2). Set as \code{"rmse"} per default.}
 
-\item{performance}{Performance metric to be used ("rmse" or "r2"), set as "rmse" per default}
-
-\item{geo}{Optional use of geographical distance as predictor in GDM model set as FALSE per default}
+\item{geo}{Optional use of geographical distance as predictor in GDM model. set as \code{FALSE} per default.}
 }
 \value{
-Returns model performance value
+Returns model performance value.
 }
 \description{
-...
+This function performs n-fold cross-validation of a GDM model.
+
+It requires a combined site pair ("spData" format) dataset, as well as the definition of the number of folds to be used in the cross-validation, the performance measure to be used and the optional use of geographical distance as predictor variable in the GDM.
+
+For more details relating to "spData" data format, check \code{gdm} package.
 }
 

@@ -24,12 +24,12 @@ library(sgdm)
 ## Test data
 
 ```{r}
-head(bioData)
+head(trees)
 ```
 
 
 ```{r}
-head(predData)
+head(spectra)
 ```
 
 ## Running a `sgdm` model
@@ -37,7 +37,7 @@ head(predData)
 Train model...
 
 ```{r}
-sgdm.gs <- sgdm.train(predData, bioData, comps = 30)
+sgdm.gs <- sgdm.train(spectra, trees, comps = 30)
 ```
 
 Returns a performance matrix...
@@ -49,13 +49,13 @@ print(sgdm.gs, digits = 4)
 Extract best...
 
 ```{r}
-sgdm.sccbest <- sgdm.best(sgdm.gs, predData, bioData, output = "c", comps = 30)
+sgdm.sccbest <- sgdm.best(sgdm.gs, spectra, trees, output = "c", comps = 30)
 ```
 
 Create spData from best...
 
 ```{r}
-spData.best <- gdm::formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
+spData.best <- gdm::formatsitepair(trees, 1, dist = "bray", abundance = TRUE,
                siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
                predData = sgdm.sccbest)
 ```
@@ -114,15 +114,15 @@ Reduce model by dropping insignificant varaibles
 There is a spatial map of the predictors...
 
 ```{r}
-raster::plotRGB(predMap, r = 20, g = 10, b = 2, stretch = "hist")
+raster::plotRGB(spectral.image, r = 20, g = 10, b = 2, stretch = "hist")
 ```
 
 Output map
 
 ```{r}
-spData <- gdm::formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
-               siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
-               predData = predData)
+#spData <- gdm::formatsitepair(trees, 1, dist = "bray", abundance = TRUE,
+#               siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
+#               predData = spectra)
 
-nmds_map <- gdm.map(spData = spData, predMap = predMap, model = sgdm.model, k = 5)
+#nmds_map <- gdm.map(spData = spData, predMap = spectral.image, model = sgdm.model, k = 5)
 ```

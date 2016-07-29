@@ -35,21 +35,12 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
          call. = FALSE)
   }
 
-  if (!requireNamespace("vegan", quietly = TRUE)) {
-    stop("vegan package needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-
   if (!requireNamespace("yaImpute", quietly = TRUE)) {
     stop("yaImpute package needed for this function to work. Please install it.",
          call. = FALSE)
   }
 
-  # data reading and dependencies configuration
-  #require(vegan)
-  #require(gdm)
-  #require(yaImpute)
-  #require(raster)
+  # data reading
 
   pairs <- nrow(spData)
   n2 <- (1+sqrt(1+8*pairs))/2
@@ -57,6 +48,7 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
   dummy_ID <- data.frame(ID=1:n2)
 
   # derive predData from input spData
+
   first_sample <- cbind(dummy_ID[1,1], spData[1,3:4], spData[1,7:(nVars+6)])
   predData0 <- cbind(dummy_ID[2:n2,1],spData[1:(n2-1),5:6],spData[1:(n2-1),(nVars+7):ncol(spData)])
   names <- c("ID","X","Y", paste0("Pred.", 1:(nVars)))

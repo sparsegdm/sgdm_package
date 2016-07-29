@@ -2,23 +2,27 @@
 % Please edit documentation in R/gdm.validate.R
 \name{gdm.validate}
 \alias{gdm.validate}
-\title{Function to calculate predictor variable drop contributions on GDM model}
+\title{Performs (independent) validation of GDM model}
 \usage{
 gdm.validate(caldata, valdata, performance = "r2", geo = F)
 }
 \arguments{
-\item{caldata}{Calibration data}
+\item{caldata}{Calibration dataset, in combined site pair ("spData") data format.}
 
-\item{valdata}{Validation data}
+\item{valdata}{Validation dataset, in combined site pair ("spData") data format.}
 
-\item{performance}{Performance metric to be used ("rmse" or "r2"), set as "r2" per default}
+\item{performance}{Performance metric to be used for validation: \code{"rmse"} for root mean square error (RMSE) or \code{"r2"} for coefficient of determination (r2). Set as \code{"r2"} per default.}
 
-\item{geo}{Optional use of geographical distance as predictor in GDM model, set as FALSE per default}
+\item{geo}{Optional use of geographical distance as predictor in GDM model. set as \code{FALSE} per default.}
 }
 \value{
-Returns model performance value
+Returns model performance value.
 }
 \description{
-...
+This function performs (independent) validation of a GDM model.
+
+It requires (independent) calibration and validation datasets in combined site pair ("spData") data format, as well as the definition of the performance measure to be used in the validation and the optional use of geographical distance as predictor variable in the gdm.
+
+#' For more details relating to "spData" data format, check \code{gdm} package.
 }
 

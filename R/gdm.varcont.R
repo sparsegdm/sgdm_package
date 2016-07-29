@@ -1,29 +1,25 @@
-#' @title Function to calculate predictor variable drop contributions on GDM model
-#' @description ...
-#' @param spData Site pair table as from formatsitetable function in gdm package
-#' @param geo Optional use of geographical distance as predictor in GDM model, set as FALSE per default
+#' @title Calculates predictor variable (drop) contributions in GDM model
+#'
+#' @description
+#' This function calculates predictor variable (drop) contributions in GDM model.
+#'
+#' Variable contributions are calculated by the loss in explained deviance in the GDM model, when dropping each individual predictor variable at a time.
+#'
+#' It requires a combined site pair dataset ("spData" format) and the optional use of geographical distance as predictor variable in the GDM.
+#'
+#' For more details relating to "spData" data format, check \code{gdm} package.
+#'
+#' @param spData Combined site pair dataset ("spData" format).
+#' @param geo Optional use of geographical distance as predictor in GDM model. Set as \code{FALSE} per default
 #' @return Returns variable contribution in percentage
 #' @export
 
 gdm.varcont <-
-  function(spData,              # site pair table as from formatsitetable function in gdm package
-           geo = FALSE)         # optional use of geographical distance as predictor in GDM model, set as FALSE per default
+  function(spData,
+           geo = FALSE)
   {
 
-    # v.3
-    #
-    # p. j. leitao - 1st July 2016
-    #
-    # function to calculate predictor variable drop contributions on GDM model
-    #
-    # delivers variable contribution in percentage
-    #
-    # requires gdm
-    #
-
-    # data reading and dependencies configuration
-    #require(gdm)
-
+    cat("\n")
     cat("Calculating GDM model variable contributions\n")
     cat("\n")
 

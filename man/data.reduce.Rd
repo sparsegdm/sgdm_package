@@ -11,12 +11,16 @@ data.reduce(data, datatype = "sp", sigtest)
 
 \item{datatype}{Type of data to de reduced: \code{pred} for predictor data ("predData" format) or \code{sp} for site pair data ("spData" format).}
 
-\item{sigtest}{Predictor variable contribution significance test, as output by gdm.varsig function.}
+\item{sigtest}{Predictor variable contribution significance test, as output by \code{gdm.varsig} function.}
 }
 \value{
-Returns reduced environmental data in the same format as the input data.
+Returns reduced environmental or site pair data.
 }
 \description{
-This function reduces the predictor variables of a dataset based on the significance test, resulting from function gdm.varsig. It can be applied to either predictor or site pair datasets.
+This function reduces the predictor variables of a dataset based on the significance test, resulting from function \code{gdm.varsig}.
+
+It can be applied to either predictor ("predData") or site pair ("spData") datasets.
+
+For more details relating to "predData" and "spData" data formats, check \code{gdm} package.
 }
 
