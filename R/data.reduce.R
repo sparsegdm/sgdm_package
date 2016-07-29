@@ -3,11 +3,13 @@
 #' @description
 #' This function reduces the predictor variables of a dataset based on the significance test, resulting from function gdm.varsig. It can be applied to either predictor or site pair datasets.
 #'
+#' For more details relating to "PredData" and "spData" data formats, check \code{gdm} package.
+#'
 #' @param data Data to be reduced based on predictor variable significance. It can be either a predictor dataset ("predData" format) or combined site pair table ("spData" format).
 #' @param datatype Type of data to de reduced: \code{pred} for predictor data ("predData" format) or \code{sp} for site pair data ("spData" format).
-#' @param sigtest Predictor variable contribution significance test, as output by gdm.varsig function.
+#' @param sigtest Predictor variable contribution significance test, as output by \code{gdm.varsig} function.
 #'
-#' @return Returns reduced environmental data in the same format as the input data.
+#' @return Returns reduced environmental or site pair data.
 #'
 #' @export
 

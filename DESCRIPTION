@@ -1,11 +1,11 @@
 Package: sgdm
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Package for performing sparse generalized dissimilarity model including tools for gdm
 Version: 0.1
 Date: 2016-06-03
 Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Maintainer: Pedro J. Leitão <steppebird@gmail.com>, Cornelius Senf <corneliussenf@googlemail.de>
+Description: Sparse generalized dissimilarity modeling is a two-stage method consisting of initially reducing the environmental data by means of a sparse canonical correlation analysis, to then fit the resulting sparse canonical components in a generalized dissimilarity model (gdm). The package also includes additional tools, useful for both gdm and sgdm.
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1

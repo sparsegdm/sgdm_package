@@ -1,5 +1,8 @@
 #' @title Performs n-fold cross-validation of gdm model
-#' @description ...
+#'
+#' @description
+#' This function performs n-fold cross-validation of a gdm model. It requires a combined site pair ("spData" format) dataset, as well as the definition of the
+#'
 #' @param spData Site pair table as from formatsitetable function in gdm package
 #' @param nfolds Number of folds for cross-validation; default = 10; if nfolds = samples then performs leave-one-out cross-validation
 #' @param metric Dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence)
