@@ -10,7 +10,7 @@
 #' @param caldata Calibration dataset, in combined site pair ("spData") data format.
 #' @param valdata Validation dataset, in combined site pair ("spData") data format.
 #' @param performance Performance metric to be used for validation: \code{"rmse"} for root mean square error (RMSE) or \code{"r2"} for coefficient of determination (r2). Set as \code{"r2"} per default.
-#' @param geo Optional use of geographical distance as predictor in GDM model. set as \code{FALSE} per default.
+#' @param geo Optional use of geographical distance as predictor in GDM model. set to \code{FALSE} per default.
 #' @return Returns model performance value.
 #' @export
 

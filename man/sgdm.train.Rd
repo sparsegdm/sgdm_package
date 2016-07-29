@@ -2,31 +2,36 @@
 % Please edit documentation in R/sgdm.train.R
 \name{sgdm.train}
 \alias{sgdm.train}
-\title{Function to perform parameter estimation of SCCA via grid search, based on GDM leave one out cross-validated performances (RMSE)}
+\title{Estimates penalization parameters for SGDM model}
 \usage{
-sgdm.train(predData, bioData, comps = 10, metric = "bray",
-  predPenalization = seq(0.6, 1, 0.1), bioPenalization = seq(0.6, 1, 0.1),
-  geo = F)
+sgdm.train(predData, bioData, k = 10, predPenalization = seq(0.6, 1, 0.1),
+  bioPenalization = seq(0.6, 1, 0.1), geo = F)
 }
 \arguments{
-\item{predData}{Environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot}
+\item{predData}{Predictor dataset ("predData" format).}
 
-\item{bioData}{Biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot}
+\item{bioData}{Biological dataset ("bioData" format).}
 
-\item{comps}{Number of sparce canonical components to be calculated, set as 10 per default}
+\item{k}{Number of sparse canonical components to be extracted. Set to 10 per default.}
 
-\item{metric}{Dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as bray curtis" per default}
+\item{predPenalization}{Vector with predictor data penalisation values to be tested in the grid search procedure (between 0 and 1). Set to \code{(0.6, 0.7, 0.8, 0.9, 1)} per default.}
 
-\item{predPenalization}{Vector with possible penalisation values to be applied on the environmental data matrix (between 0 and 1)}
+\item{bioPenalization}{Vector with biological data penalisation values to be tested in the grid search procedure (between 0 and 1). Set to \code{(0.6, 0.7, 0.8, 0.9, 1)} per default.}
 
-\item{bioPenalization}{Vector with possible penalisation values to be applied on the biological data matrix (between 0 and 1)}
-
-\item{geo}{Optional use of geographical distance as predictor in GDM model, set as FALSE per default}
+\item{geo}{Optional use of geographical distance as predictor in GDM model. Set to \code{FALSE} per default}
 }
 \value{
-Returns performance matrix with RMSE values for each SCCA penalization parameter pair
+Returns performance matrix with RMSE values for each tested penalization parameter pair.
 }
 \description{
-...
+This function estimates the penalization parameters for the SCCA within the SGDM model.
+
+The SCCA parameterization is done in a heuristic grid search manner, by testing all possible pairs of parameters (for both the biological and the predictor datasets), according to the resulting GDM performance (RMSE) in 5-fold cross-validation.
+
+It requires a predictor dataset ("predData" format), a biological dataset ("bioData" format), the number of components to be extracted in the SCCA, the penalization values to be tested (for both datasets), and the optional use of geographical distance as predictor variable in the GDM.
+
+This current implementation only allows biological data in the format 1 using abundance values, as described in the \code{gdm} package.
+
+For more details relating to "bioData" and "predData" data formats, check \code{gdm} package.
 }
 

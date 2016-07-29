@@ -10,7 +10,7 @@
 #' @param spData Combined site pair dataset ("spData" format).
 #' @param nfolds Number of folds for cross-validation. Default is 10 folds. If number of folds equals number of samples then leave-one-out cross-validation is performed.
 #' @param performance Performance metric to be used for validation: \code{"rmse"} for root mean square error (RMSE) or \code{"r2"} for coefficient of determination (r2). Set as \code{"rmse"} per default.
-#' @param geo Optional use of geographical distance as predictor in GDM model. set as \code{FALSE} per default.
+#' @param geo Optional use of geographical distance as predictor in GDM model. set to \code{FALSE} per default.
 #' @return Returns model performance value.
 #' @export
 

@@ -26,6 +26,8 @@ data.reduce <-
            call. = FALSE)
     }
 
+    data.type.check<-class(data)
+
     # Reducing dataset
 
     if(datatype=="sp"){
@@ -40,9 +42,6 @@ data.reduce <-
     if(datatype=="pred"){
       cat("Reducing environmental dataset following significance test result\n")
       cat("\n")
-
-
-      data.type.check<-class(data)
 
       if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer"){
         cat("\n")

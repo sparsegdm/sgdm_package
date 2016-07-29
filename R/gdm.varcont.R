@@ -10,7 +10,7 @@
 #' For more details relating to "spData" data format, check \code{gdm} package.
 #'
 #' @param spData Combined site pair dataset ("spData" format).
-#' @param geo Optional use of geographical distance as predictor in GDM model. Set as \code{FALSE} per default
+#' @param geo Optional use of geographical distance as predictor in GDM model. Set to \code{FALSE} per default
 #' @return Returns variable contribution in percentage
 #' @export
 

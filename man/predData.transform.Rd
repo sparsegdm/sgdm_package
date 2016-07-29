@@ -4,12 +4,12 @@
 \alias{predData.transform}
 \title{Performs SCCA transformation of environmental data}
 \usage{
-predData.transform(predData, v.best)
+predData.transform(predData, v)
 }
 \arguments{
 \item{predData}{Predictor dataset (predData format) or as a raster object.}
 
-\item{v.best}{Sparse canonical vectors as extracted by \code{sgdm.best} using output = \code{"v"}.}
+\item{v}{Sparse canonical vectors as extracted by \code{sgdm.best} using output = \code{"v"}.}
 }
 \value{
 Returns environmental data transformed into sparse canonical components for further use with GDM. This dataset is delivered in the same format (data frame or raster object) as the input data.

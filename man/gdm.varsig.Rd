@@ -14,9 +14,9 @@ gdm.varsig(predData, bioData, metric = "bray", geo = F, perm = 100,
 
 \item{metric}{Dissimilarity metric to be used.}
 
-\item{geo}{Optional use of geographical distance as predictor in GDM model. Set as \code{FALSE} per default}
+\item{geo}{Optional use of geographical distance as predictor in GDM model. Set to \code{FALSE} per default}
 
-\item{perm}{Number of matrix permutations to be used for calcuating statistical significance.}
+\item{perm}{Number of matrix permutations to be used for calculating statistical significance.}
 
 \item{sig}{Significance level (p-value) to be tested. Set as 0.05 per default.}
 }

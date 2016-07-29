@@ -6,13 +6,13 @@
 #' The input data can either be provided as dataframe or raster object, which must have the same number of predictors as used for deriving the sparse canonical vectors. The output data will be delivered in the same format (dataframe or raster object) as the input.
 #'
 #' @param predData Predictor dataset (predData format) or as a raster object.
-#' @param v.best Sparse canonical vectors as extracted by \code{sgdm.best} using output = \code{"v"}.
+#' @param v Sparse canonical vectors as extracted by \code{sgdm.best} using output = \code{"v"}.
 #' @return Returns environmental data transformed into sparse canonical components for further use with GDM. This dataset is delivered in the same format (data frame or raster object) as the input data.
 #' @export
 
 predData.transform <-
   function(predData,
-           v.best)
+           v)
   {
 
     if (!requireNamespace("raster", quietly = TRUE)) {
@@ -40,13 +40,13 @@ predData.transform <-
     }
 
 
-    if(nrow(v.best)!= (ncol(predData)-3)) stop("Environmental data must have the same number of predictors as used for deriving sparse canonical vectors!")
+    if(nrow(v)!= (ncol(predData)-3)) stop("Environmental data must have the same number of predictors as used for deriving sparse canonical vectors!")
 
     # extracting Plot_ID and coordinates
     gi <- predData[,1:3]
 
     predData1 <- as.matrix(predData[,4:ncol(predData)])
-    predData.new0 <- predData1 %*% v.best
+    predData.new0 <- predData1 %*% v
     predData.new <- as.data.frame(cbind(gi,predData.new0))
 
 

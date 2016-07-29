@@ -9,7 +9,7 @@ gdm.varcont(spData, geo = FALSE)
 \arguments{
 \item{spData}{Combined site pair dataset ("spData" format).}
 
-\item{geo}{Optional use of geographical distance as predictor in GDM model. Set as \code{FALSE} per default}
+\item{geo}{Optional use of geographical distance as predictor in GDM model. Set to \code{FALSE} per default}
 }
 \value{
 Returns variable contribution in percentage

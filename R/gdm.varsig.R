@@ -14,8 +14,8 @@
 #' @param predData Predictor dataset ("predData" format).
 #' @param bioData Biological dataset ("bioData" format).
 #' @param metric Dissimilarity metric to be used.
-#' @param geo Optional use of geographical distance as predictor in GDM model. Set as \code{FALSE} per default
-#' @param perm Number of matrix permutations to be used for calcuating statistical significance.
+#' @param geo Optional use of geographical distance as predictor in GDM model. Set to \code{FALSE} per default
+#' @param perm Number of matrix permutations to be used for calculating statistical significance.
 #' @param sig Significance level (p-value) to be tested. Set as 0.05 per default.
 #' @return Returns vector resulting of the significance test. Variables with significant model contributions are assigned value \code{TRUE}, and non-significant variables the value \code{FALSE}, according to the defined p-value threshold.
 #' @export

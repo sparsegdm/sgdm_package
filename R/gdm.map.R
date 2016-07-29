@@ -1,34 +1,35 @@
-#' @title Function to map NMDS transformed gdm site pair dissimilarity predictions
-#' @description Function to predict dissimilarities between sample site pairs using a gdm model. Resulting multidimesional dissimilarities
-#'              are transformed to a NMDS (non-metrical multidimensional scaling) feature space with a defined number of components.
-#'              If a raster object with the same set of predictor variables as used for gdm model building is provided, the transformed
-#'              dissimilarities will be mapped using k-nearest neighbor imputation.
-#' @param spData Compiled dataset as output from "format.site.pair".
-#' @param predMap Raster object with the same set of predictior variables as used for gdm model building; if no raster object is provided NMDS scores will be returned as data.frame.
-#' @param model A gdm.model object for dissimilarity prediction.
-#' @param k number of resulting NMDS components (default = 3); if k = 0 number of components will be derived using a mean NMDS stress value threshold (t) after 20 iterations of NMDS using all given predictor variables.
-#' @param t NMDS stress value threshold (default = 0.1).
-#' @return NMDS object with k number of components based on gdm predicted sample pair dissimilarities if no raster is provided; NMDS raster map with k number of layers.
+#' @title
+#' Maps community composition as a result of non-linear transformation of the predicted GDM dissimilarities
+#'
+#' @description
+#' This function maps community composition as a result of the non-linear transformation of the predicted GDM dissimilarities.
+#'
+#' A GDM model is run on the input site pair dataset ("spData" format), in order to derive the predicted dissimilarities between all possible pairs of sites.
+#'
+#' A non-metrical multidimensional scaling (NMDS) is then applied to transform the predicted dissimilarities to extract the main patterns of community composition within the sampled sites. The number of NMDS components to be extracted can be mannually defined by the user (set to 3 per default). Alternatively, if the number of desired components given is set to 0 (zero), the resulting number of components will be automatically defined based on the resulting stress values (of the NMDS) according to a set threshold \code{t} (set to 0.1 per default).
+#'
+#' It requires a It requires a combined site pair dataset ("spData" format), a GDM model object and the number of components (\code{k}) to be extracted in the NMDS. If \code{k} is set to 0 then requires the stress value threshold \code{t} for automatically defining the number of NMDS components to be extracted.
+#'
+#' If a map with predictor variables is given (either as raster object or dataframe), these will be assigned (mapped) along the NMDS axes, by comparing the map with the sampled sites (site pair data), following to a k-nearest neighbor imputation approach. The output map will be delivered in the same format as the input map. For this method to work, the input map must have exactly the same predictor variables as those used for the GDM model, and those in the site pair dataset. This option requires the previous instalation of the \code{yalmpute} package, and in case a raster object is given as input map it also requires the \code{raster} package.
+#'
+#' For more details relating to "spData" data format, check \code{gdm} package.
+#'
+#' @param spData Combined site pair dataset ("spData" format). This dataset must include the same predictor variables as those used to build the GDM model below.
+#' @param predMap Map with the same prediction variables as used to compile the site pair dataset. This map may be a raster object or a dataframe. The output map will be delivered in the same format as the input predMap. If no variable is given here, the function will only map the community composition on the sampled sites. i.e. the NMDS scores for the site pair data.
+#' @param model A GDM model object for dissimilarity prediction.
+#' @param k Number of NMDS components to be extracted. Set to 3 per default. If \code{k} = 0 then the number of components to be extracted will be automatically defined following the mean NMDS stress value threshold \code{t} after 20 iterations.
+#' @param t NMDS stress value threshold. Set to 0.1 per default. This variable is only valid if \code{k} (above) is set to 0 (zero).
+#' @return If a predMap is given returns a NMDS map with k number of layers. If no predMap is given returns NMDS scores for k number of components based on the GDM predicted dissimilarities for the site pair data.
 #' @export
 
 
 
-gdm.map<- function(spData,        # site pair table as from formatsitetable function in gdm package
-                   predMap,       # Raster object with the same set of predictior variables as used for gdm model building; if no raster object is provided NMDS scores will be returned as data.frame.
-                   model,         # gdm.model
-                   k = 3,           # number of NMDS components to extract; if not specified number of components will be derived be NMDS stress value
-                   t = 0.1)         # NMDS stress value threshold to extract number of components if k is not specified
-{
-  # v.1
-  #
-  # m. schwieder; c. senf - 27th July 2016
-  #
-  # function to map NMDS transformed dissimilarities
-  #
-  # delivers NMDS outputs as score table or raster map
-  #
-  # requires gdm, vegan, raster and yaImpute
-  #
+gdm.map<- function(spData,
+                   predMap,
+                   model,
+                   k = 3,
+                   t = 0.1)
+  {
 
   if (!requireNamespace("raster", quietly = TRUE)) {
     stop("raster package needed for this function to work. Please install it.",
@@ -64,8 +65,6 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
   sample.pair <- spData
   sample.pair.diss <- gdm::predict.gdm(model, sample.pair)
 
-  #sample.pair.diss.mat<-as.data.frame(sample.pair.diss)
-
   X <- diag(x=0, nrow(predData),nrow(predData))
   X[upper.tri(X, diag=FALSE)] <- sample.pair.diss
   X <- X + t(X) - diag(diag(X))
@@ -91,7 +90,6 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
         table_nmds <- vegan::monoMDS(sample.pair.diss.mat, k=i, model ="global", maxit=1000)
 
         # Stress values of model
-        # stressplot(table_nmds)
         stress[j,i]<-table_nmds$stress
       }
 
@@ -120,8 +118,8 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
 
   # Check if raster stack is provided for map output.
   if (missing(predMap)){
-    #return(nmds_scores)
-    return(sample_nmds)
+    return(nmds_scores)
+    # return(sample_nmds)
   }
 
   else{
@@ -129,7 +127,7 @@ gdm.map<- function(spData,        # site pair table as from formatsitetable func
 
     if(data.type.check == "RasterStack" || data.type.check == "RasterBrick" || data.type.check == "RasterLayer"){
       cat("\n")
-      cat("predMap is data type ", data.type.check, " and will be used to impute the NMDS transformed gdm dissimilarity predictions \n")
+      cat("predMap, is data type", data.type.check, "and will be used to impute the NMDS-transformed GDM predicted dissimilarities\n")
       cat("\n")
 
       image.df <- raster::as.data.frame(predMap, xy=TRUE)

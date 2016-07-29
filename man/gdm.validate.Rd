@@ -13,7 +13,7 @@ gdm.validate(caldata, valdata, performance = "r2", geo = F)
 
 \item{performance}{Performance metric to be used for validation: \code{"rmse"} for root mean square error (RMSE) or \code{"r2"} for coefficient of determination (r2). Set as \code{"r2"} per default.}
 
-\item{geo}{Optional use of geographical distance as predictor in GDM model. set as \code{FALSE} per default.}
+\item{geo}{Optional use of geographical distance as predictor in GDM model. set to \code{FALSE} per default.}
 }
 \value{
 Returns model performance value.

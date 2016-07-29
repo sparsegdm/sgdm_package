@@ -1,25 +1,34 @@
-#' @title Retrieves the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SGDM parameter estimation using sgdm.train
-#' @description ...
-#' @param perf.matrix Performance matrix as output from sgdm.grid
-#' @param predData Environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-#' @param bioData Biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-#' @param output Type of output: "m" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; default = gdm model
-#' @param comps Number of sparce canonical components to be calculated, set as 10 per default
-#' @param metric Only needed if output = "m"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
+#' @title
+#' Retrieves the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SGDM parameter estimation
+#'
+#' @description
+#' This function retrieves the best SGDM model, SCCA canonical components or SCCA canonical vectors, as resulting from the SGDM parameter estimation with the \code{gdm.train} function.
+#'
+#' The parameter pair with the lowest RMSE value is selected to run the SCCA on the biological and predictor datasets. If \code{output} = "m" delivers the GDM model built on the extracted SCCA components; if \code{output} = "c" delivers the SCCA components that result in the best GDM model; and if If \code{output} = "v" delivers the SCCA canonical vectors used to tranform the predictor data into the canonical components.
+#'
+#' It requires a performance matrix as resulting from the \code{gdm.train} function, a predictor dataset ("predData" format), a biological dataset ("bioData" format), the type of output, the number of components to be extracted in the SCCA and the optional use of geographical distance as predictor variable in the GDM.
+#'
+#' This current implementation only allows biological data in the format 1 using abundance values, as described in the \code{gdm} package.
+#'
+#' For more details relating to "bioData" and "predData" data formats, check \code{gdm} package.
+#'
+#' @param perf.matrix Performance matrix as output from \code{sgdm.train} function.
+#' @param predData Predictor dataset ("predData" format).
+#' @param bioData Biological dataset ("bioData" format).
+#' @param output Type of output: "m" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; Set as "m" per default.
+#' @param k Number of sparce canonical components to be calculated, set as 10 per default
 #' @param geo only needed if output = "m"; optional use of geographical distance as predictor in GDM model, set as FALSE per default
-#' @return Returns GDM model, sparse canonical components, or sparse canonical vectors (default is \code{output = "m"}, which returns a GDM model object)
+#' @return Returns a GDM model, the sparse canonical components, or the sparse canonical vectors, depending on the output defined. The default is \code{output} = "m", which returns a GDM model object.
 #' @export
 
 sgdm.best <-
-  function(perf.matrix,       # performance matrix as output from sgdm.grid
-           predData,          # environmental data matrix, with Plot_ID, X, Y as three first columns followed by predictor values per plot
-           bioData,           # biological data matrix, with Plot_ID as first column, followed by species occurrence / abundance per plot
-           output = "m",      # type of output: "m" = gdm model; "c" = sparse canonical components; "v" = sparse canonical vectors; default = gdm model
-           comps = 10,        # number of sparce canonical components to be calculated, set as 10 per default
-           metric = "bray",     # only needed if output = "m"; dissimilarity metric to be used ("bray curtis" for abundance or "Jaccard" for presence-absence), set as "bray curtis" per default
-           geo = F)           # only needed if output = "m"; optional use of geographical distance as predictor in GDM model, set as FALSE per default
-
-      {
+  function(perf.matrix,
+           predData,
+           bioData,
+           output = "m",
+           k = 10,
+           geo = F)
+    {
 
     # v.3
     #
@@ -52,7 +61,7 @@ sgdm.best <-
     # running SCCA
 
     cca.best <- PMA::CCA(bioData[,2:j2], predData[,4:j1], typex="standard",typez="standard", penaltyx=cname,
-                    penaltyz=rname, K=comps, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
+                    penaltyz=rname, K=k, niter=1000, v=NULL, trace=TRUE, standardize=TRUE,
                     xnames=NULL, znames=NULL)
 
     # extracting canonical vectors
@@ -60,6 +69,8 @@ sgdm.best <-
     v.best <- cca.best$v
 
     if (output == "v") {
+
+      cat("\n")
       cat("Sparse canonical vectors created\n")
       cat("\n")
 
@@ -76,8 +87,10 @@ sgdm.best <-
       colnames(cgi)[1] <- "Plot_ID"
 
       if (output == "c") {
-              cat("Sparse canonical components created\n")
-      cat("\n")
+
+        cat("\n")
+        cat("Sparse canonical components created\n")
+        cat("\n")
 
       return (cgi)
       }
@@ -85,7 +98,7 @@ sgdm.best <-
       if (output == "m") {
         # compiling data
 
-        spData <- gdm::formatsitepair(bioData, 1, dist = metric, abundance = TRUE,
+        spData <- gdm::formatsitepair(bioData, 1, dist = "bray", abundance = TRUE,
                                  siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
                                  predData = cgi)
 
@@ -93,6 +106,7 @@ sgdm.best <-
 
         gdm.mod <- gdm::gdm(spData,geo=geo)
 
+        cat("\n")
         cat("Best SGDM model created\n")
         cat("\n")
 
