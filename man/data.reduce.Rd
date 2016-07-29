@@ -18,9 +18,5 @@ Returns reduced environmental data in the same format as the input data.
 }
 \description{
 This function reduces the predictor variables of a dataset based on the significance test, resulting from function gdm.varsig. It can be applied to either predictor or site pair datasets.
-
-abcd
-
-abc
 }
 
