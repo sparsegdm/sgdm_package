@@ -170,8 +170,8 @@ gdm.map<- function(spData,
 
     }
   }
-  # plot and return NMDS raster
-  plot(impute_map, col=gray.colors(100 , start = 0.9, end = 0.1 ))
+  # Return NMDS raster
+  #plot(impute_map, col=gray.colors(100 , start = 0.9, end = 0.1 ))
   return(impute_map)
 }
 

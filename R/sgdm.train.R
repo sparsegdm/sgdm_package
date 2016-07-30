@@ -86,7 +86,7 @@ sgdm.train <-
                               predData = cgi)
 
       # calulating GDM model performance
-      result <- gdm.cv(spData,nfolds=5,metric="bray",geo=geo)
+      result <- gdm.cv(spData, nfolds = 5, geo = geo)
 
       # feeding performance matrix
       perf.matrix[paste(px), paste(pz)] <- result[1]

@@ -9,50 +9,59 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Introduction
+## Installing `sgdm`
 
-Enter text here...
+In order to install `sgdm` from GitHub, you need to install the `devtools` package first. Using the `install_git` function in the `dectools` package, the `sgdm` package can be easily installed:
 
-## Installing the model
-
-```{r}
-#library(devtools)
-#devtools::install_git(...)
+```{r, eval=FALSE}
+library(devtools)
+devtools::install_git(...)
 library(sgdm)
 ```
 
-## Test data
-
-```{r}
-head(trees)
+```{r, echo=FALSE}
+library(sgdm)
 ```
 
+## Exemplary data
 
-```{r}
-head(spectra)
-```
+The package includes exemplary data, which includes a biological dataset (trees), composed of 30 observations with abundance values for 48 different tree taxa, and a predictor variable dataset (spetcra), composed of 30 observations of 83 variables (hyperspectral bands). The biological dataset includes a first ID column, and the predictor dataset includes a first ID column followed by two geographical coordinate (X and Y) columns.
 
 ## Running a `sgdm` model
 
-Train model...
+Running a full `sgdm` model requires five steps:
 
-```{r}
-sgdm.gs <- sgdm.train(spectra, trees, comps = 30)
+- Create the sparse canonical components
+- Train the SGDM model
+- Reduce the SGDM model by identifying in-significant predictors
+- Validate the SGDM model using cross-validation
+- Map the SGDM model
+
+In the following we will go through each of the five steps in order to examplify how the `sgdm` package works.
+
+### Create the sparse canonical components
+
+For creating the sparse canonical components, the first step is to identify the best penalization parameter combination using a heuristic grid search implemented in the function `sgdm.train`:
+
+```{r, hide=TRUE}
+sgdm.gs <- sgdm.train(predData = spectra, bioData = trees, k = 30, predPenalization = seq(0.6, 1, 0.1), bioPenalization = seq(0.6, 1, 0.1), geo = F)
 ```
 
-Returns a performance matrix...
+The parameter `k` sets the number of components to be used and the parameters `predPenalization` and `bioPenalization` set the penalization values to be tested (ranging from 0 (strong penalization) to 1 (weak penalization)). The standard values implemented in this function range from 0.6 to 1 in 0.1 steps, but these values can be manually configured to better match the used datasets. Finally, the user can specify if geographical distance as a variable in the GDM model should be used. Note that this function implementation only allows biological data in **format 1** specification as described in the `gdm` package.
+
+The function `sgdm.train` returns a performance matrix, which presents the performance (RMSE value) of each parameter combination estimated from leave-one-out cross-validation:
 
 ```{r}
 print(sgdm.gs, digits = 4)
 ```
 
-Extract best...
+Using the performance matrix and the `sgdm.best` function, we can extract the best GDM model:
 
-```{r}
-sgdm.sccbest <- sgdm.best(sgdm.gs, spectra, trees, output = "c", comps = 30)
+```{r, hide=TRUE}
+sgdm.sccbest <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "c", k = 30)
 ```
 
-Create spData from best...
+The user here again has to specify the number of canonical components (`k`) and the output. The outout can either be in the form of a gdm model (`output = "m"`), the sparse canonical components (`output = "c"`), or the sparse canonical vectors (`output = "v"`). Here we use the sparse canonical components in order to construct a site-pair table (using the `formatsitepair` function in the `gdm` package) from the biological data and the newly created sparse components:
 
 ```{r}
 spData.best <- gdm::formatsitepair(trees, 1, dist = "bray", abundance = TRUE,
@@ -60,69 +69,81 @@ spData.best <- gdm::formatsitepair(trees, 1, dist = "bray", abundance = TRUE,
                predData = sgdm.sccbest)
 ```
 
-Retrain model...
+### Train the SGDM model
+
+Using the newly created site-pair table, we can now train a final GDM model using the `gdm` function in the `gdm` package:
 
 ```{r}
 sgdm.model <- gdm::gdm(spData.best)
 ```
 
-Model diagnostics
+We can extract the variance explained by the model:
 
 ```{r}
 sgdm.model$explained
 ```
 
+And plot the predicted versus observed values:
+
 ```{r}
-plot(sgdm.model$predicted, sgdm.model$observed,xlim = c(0, 1), ylim = c(0, 1))
+plot(sgdm.model$predicted, sgdm.model$observed, xlim = c(0, 1), ylim = c(0, 1))
 abline(0, 1)
 ```
 
-```{r}
-(cor(sgdm.model$predicted, sgdm.model$observed)^2) * 100
+### Dropping in-significant predictors
+
+Some of the sparse canonical components might be less important than others. To identify those un-important components in order to reduce the model complexity, we can utilize the `gdm.varsig` function with the sparse canonical components and the biological data in order to identify the significant components:
+
+```{r, hide=TRUE}
+sigtest.sgdm <- gdm.varsig(predData = sgdm.sccbest, bioData = trees)
 ```
 
-Evaluate model performance
+and use this significance vector to reduce the site-pair table and re-train the model:
 
 ```{r}
-gdm.cv(spData.best, nfolds = 10)
+spData.red.best <- data.reduce(spData.best, datatype = "sp", sigtest.sgdm)
+sgdm.red.model <- gdm::gdm(spData.red.best)
+
+sgdm.red.model$explained
+
+plot(sgdm.red.model$predicted,sgdm.red.model$observed,xlim=c(0,1),ylim=c(0,1))
+abline(0,1)
 ```
 
-Using $r^2$
+### Cross-validate the SGDM model
+
+For independent validation, there is a function in the `sgdm` package called `gdm.cv`, which performes n-fold corss-validation on a (S)GDM model:
+
+```{r}
+gdm.cv(spData.best, nfolds = 10, performance = "rmse")
+```
+
+The functions returns the cross-validated RMSE value. Alternatively, we can return the cross-validated squared pearson correlation coefficient:
 
 ```{r}
 gdm.cv(spData.best, nfolds = 10, performance = "r2")
 ```
 
-Reduce model by dropping insignificant varaibles
+### Making spatial predictions
 
-```{r}
-#sigtest.sgdm <- gdm::gdm.varImp(spData.best, geo = FALSE, fullModelOnly = TRUE, nPerm = 100, 
-#                                parallel = TRUE, cores = 6)
-```
-
-```{r}
-#sigtest.sgdm <- sigtest.sgdm[[2]][, 1] <= 0.05
-```
-
-
-```{r}
-#spData.red.best <- data.reduce(spData.best, datatype = "sp", sigtest.sgdm)
-```
-
-## Making spatial predictions
-
-There is a spatial map of the predictors...
+The predictor data in `spectra` were obtained from a hyperspectral image with 83 spectral bands. We included this image as `RasterStack` within the package:
 
 ```{r}
 raster::plotRGB(spectral.image, r = 20, g = 10, b = 2, stretch = "hist")
 ```
 
-Output map
+In order to map the SGDM to the image, we first need to convert the spectra to the same sparse canonical components as used in model training, as well as we need to drop the insignificant bands. Therefore, we again can use the data.reduce functions:
 
 ```{r}
-#spData <- gdm::formatsitepair(trees, 1, dist = "bray", abundance = TRUE,
-#               siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
-#               predData = spectra)
-
-#nmds_map <- gdm.map(spData = spData, predMap = spectral.image, model = sgdm.model, k = 5)
+v <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "v", k = 30)
+component.image <- predData.transform(predData = spectral.image, v = v)
+component.image.red <- data.reduce(component.image, datatype = "pred", sigtest = sigtest.sgdm)
 ```
+
+Following, we can use the gdm.map function to convert ...
+
+```{r}
+mapsgdm.red <- gdm.map(spData.red.best, component.image.red, sgdm.red.model, k = 3)
+raster::plotRGB(mapsgdm.red, r = 3, g = 2, b = 1, stretch = "hist")
+```
+
