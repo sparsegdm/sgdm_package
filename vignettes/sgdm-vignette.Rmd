@@ -140,7 +140,7 @@ The number of NMDS axes to be extracted is by default automatically determined b
 
 The number of NMDS axes (`k`) can also be set by the user.
 
-These patterns can also be mapped in space using a predictor map. As it would be unfeasable to run a NMDS on the dissimilarities between all possible pairs of image pixels, it is possible to assign the pixels to the NMDS axes from the sample pairs, through knn-imputation.
+These patterns can also be mapped in space using a predictor map. As it would be unfeasible to run a NMDS on the dissimilarities between all possible pairs of image pixels, it is possible to assign the pixels to the NMDS axes from the sample pairs, through knn-imputation.
 
 The predictor map used here is called `spectral.image` and is a `RasterStack` object, which can be plotted in false color:
 
@@ -155,7 +155,7 @@ component.image <- predData.transform(predData = spectral.image, v = sgdm.vbest)
 component.image.red <- data.reduce(component.image, datatype = "pred", sigtest = sigtest.sgdm)
 ```
 
-With the resulting reduced component image, it is possible to map the community composition patterns in space. In order to visualize them in RGB space, we extract three NMDS axes:
+With the resulting reduced component image, it is possible to map the community composition patterns in space. For example, in order to visualize them in RGB space, it is possible to extract 3 NMDS axes:
 
 ```{r}
 map.sgdm.red <- gdm.map(spData = spData.red.best, predMap = component.image.red, model = sgdm.red.model, k = 3)
