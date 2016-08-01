@@ -5,7 +5,7 @@
 #'
 #' Significance is calculated through random matrix permutations, to infer if the variable (drop) contributions are greater than those obtained by chance.
 #'
-#' It requires a biological ("bioData" format) and a predictor ("spData" format) datasets, the dissimilarity metric to be used, the optional use of geographical distance as predictor variable in the GDM, the number of permutations to be run and the significance level to be tested.
+#' It requires a biological ("bioData" format) and a predictor ("spData" format) datasets, the optional use of geographical distance as predictor variable in the GDM, the number of permutations to be run and the significance level to be tested.
 #'
 #' This current implementation only allows biological data in the format 1 using abundance values, as described in the \code{gdm} package.
 #'
@@ -13,7 +13,6 @@
 #'
 #' @param predData Predictor dataset ("predData" format).
 #' @param bioData Biological dataset ("bioData" format).
-#' @param metric Dissimilarity metric to be used.
 #' @param geo Optional use of geographical distance as predictor in GDM model. Set to \code{FALSE} per default
 #' @param perm Number of matrix permutations to be used for calculating statistical significance.
 #' @param sig Significance level (p-value) to be tested. Set as 0.05 per default.
@@ -23,7 +22,6 @@
 gdm.varsig <-
   function(predData,
            bioData,
-           metric = "bray",
            geo = F,
            perm = 100,
            sig = 0.05)
@@ -82,7 +80,7 @@ gdm.varsig <-
       cat("\n")
 
       q <- t+1
-      dist <- vegan::vegdist(as.data.frame(bio.perm$perm[t]), method=metric)
+      dist <- vegan::vegdist(as.data.frame(bio.perm$perm[t]), method= "bray")
       pdata <- spData
       pdata[,1] <- dist
 
