@@ -75,7 +75,7 @@ sgdm.sccbest <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = t
 sgdm.vbest <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "v", k = 30)
 ```
 
-### Reduce the SGDM model by identifying non-significant predictors
+### Reduce the SGDM model by removing non-significant predictors
 
 Some of the sparse canonical components might be less important than others. In order to reduce the model complexity, we can utilize the `gdm.varsig` function with the sparse canonical components and the biological data:
 
