@@ -27,7 +27,7 @@
 gdm.map<- function(spData,
                    predMap,
                    model,
-                   k = 3,
+                   k = 0,
                    t = 0.1)
   {
 
@@ -77,10 +77,9 @@ gdm.map<- function(spData,
     cat("\n")
 
     # derive k for NMDS based on 20 iterations and all possible components
-    # stress: > 0.05 excellent
-    #         > 0.1  great
-    #         > 0.2  good/ok
-    #         > 0.3  poor
+    # stress: < 0.05 excellent
+    #         < 0.1  good
+    #         > 0.1  poor
 
     stress<-matrix(nrow=20,ncol=nrow(sample.pair.diss.mat))
     stress<-as.data.frame(stress)
