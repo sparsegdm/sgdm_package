@@ -62,10 +62,8 @@ sgdm.model <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = tre
 
 Summary of the model:
 
-```{r}
+```{r, results='hide'}
 summary(sgdm.model)
-
-sgdm.model$explained
 ```
 
 Alternatively, the sgdm.best function also allows the user to retrieve the resulting sparse canonical components (`output = "c"`) or the respective canonical vectors (`output = "v"`).
@@ -101,11 +99,11 @@ sgdm.model.red <- gdm::gdm(data = spData.sccabest.red)
 
 The final model can now be inspected and the predicted dissimilarities plotted:
 
-```{r}
+```{r, results='hide'}
 summary(sgdm.model.red)
+```
 
-sgdm.model.red$explained
-
+```{r}
 plot(sgdm.model.red$predicted, sgdm.model.red$observed, xlim = c(0, 1), ylim = c(0, 1))
 abline(0, 1)
 ```
@@ -128,15 +126,15 @@ gdm.cv(spData = spData.sccabest.red, nfolds = 10, performance = "r2")
 
 The community composition patterns can be plotted along the main axes of variation following an NMDS transformation of the predicted dissimilarities between sample pairs:
 
-```{r}
+```{r, results='hide'}
 community.samples <- gdm.map(spData = spData.sccabest.red, model = sgdm.model.red, k = 0, t = 0.1)
 ```
 
 The number of NMDS axes to be extracted is by default automatically determined by the resulting mean NMDS stress values out of 20 iterations following:
 
-- < 0.05 excellent
-- < 0.1  good
-- > 0.1  poor
+- less than 0.05: excellent
+- less than 0.1: good
+- greater 0.1: poor
 
 The number of NMDS axes (`k`) can also be set by the user.
 
