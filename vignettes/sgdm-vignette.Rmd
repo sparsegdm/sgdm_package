@@ -86,7 +86,7 @@ sigtest.sgdm <- gdm.varsig(predData = sgdm.sccbest, bioData = trees)
 and use this significance test result to reduce the predictor data for re-training the model:
 
 ```{r}
-sgdm.sccbest.red <- data.reduce(predData = sgdm.sccbest, datatype = "pred", sigtest = sigtest.sgdm)
+sgdm.sccbest.red <- data.reduce(data = sgdm.sccbest, datatype = "pred", sigtest = sigtest.sgdm)
 ```
 
 In order to train the final model, the significant sparse canonical components must be combined with the biological dataset in a site pair dataset using the function `formatsitepair` in the `gdm` package:
@@ -94,9 +94,9 @@ In order to train the final model, the significant sparse canonical components m
 ```{r}
 spData.sccabest.red <- gdm::formatsitepair(bioData = trees, bioFormat = 1, dist = "bray",
                                            abundance = TRUE, siteColumn = "Plot_ID", 
-                                           XColumn = "X",YColumn = "Y", redData = sgdm.sccbest.red)
+                                           XColumn = "X",YColumn = "Y", predData = sgdm.sccbest.red)
 
-sgdm.model.red <- gdm::gdm(spData = spData.sccabest.red)
+sgdm.model.red <- gdm::gdm(data = spData.sccabest.red)
 ```
 
 The final model can now be inspected and the predicted dissimilarities plotted:
@@ -158,7 +158,7 @@ component.image.red <- data.reduce(component.image, datatype = "pred", sigtest =
 With the resulting reduced component image, it is possible to map the community composition patterns in space. For example, in order to visualize them in RGB space, it is possible to extract 3 NMDS axes:
 
 ```{r}
-map.sgdm.red <- gdm.map(spData = spData.red.best, predMap = component.image.red, model = sgdm.red.model, k = 3)
+map.sgdm.red <- gdm.map(spData = spData.sccabest.red, predMap = component.image.red, model = sgdm.model.red, k = 3)
 raster::plotRGB(map.sgdm.red, r = 3, g = 2, b = 1, stretch = "hist")
 ```
 

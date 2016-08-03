@@ -21,7 +21,7 @@
 #' @return Returns performance matrix with RMSE values for each tested penalization parameter pair.
 #' @export
 
-sgdm.train <-
+sgdm.param <-
   function(predData,
            bioData,
            k = 10,

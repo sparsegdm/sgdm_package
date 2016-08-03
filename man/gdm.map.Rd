@@ -4,7 +4,7 @@
 \alias{gdm.map}
 \title{Maps community composition as a result of non-linear transformation of the predicted GDM dissimilarities}
 \usage{
-gdm.map(spData, predMap, model, k = 3, t = 0.1)
+gdm.map(spData, predMap, model, k = 0, t = 0.1)
 }
 \arguments{
 \item{spData}{Combined site pair dataset ("spData" format). This dataset must include the same predictor variables as those used to build the GDM model below.}

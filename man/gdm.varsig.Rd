@@ -4,15 +4,12 @@
 \alias{gdm.varsig}
 \title{Calculates statistical significance of predictor variable contributions in GDM model}
 \usage{
-gdm.varsig(predData, bioData, metric = "bray", geo = F, perm = 100,
-  sig = 0.05)
+gdm.varsig(predData, bioData, geo = F, perm = 100, sig = 0.05)
 }
 \arguments{
 \item{predData}{Predictor dataset ("predData" format).}
 
 \item{bioData}{Biological dataset ("bioData" format).}
-
-\item{metric}{Dissimilarity metric to be used.}
 
 \item{geo}{Optional use of geographical distance as predictor in GDM model. Set to \code{FALSE} per default}
 
@@ -28,7 +25,7 @@ This function calculates the statistical significance of predictor variable cont
 
 Significance is calculated through random matrix permutations, to infer if the variable (drop) contributions are greater than those obtained by chance.
 
-It requires a biological ("bioData" format) and a predictor ("spData" format) datasets, the dissimilarity metric to be used, the optional use of geographical distance as predictor variable in the GDM, the number of permutations to be run and the significance level to be tested.
+It requires a biological ("bioData" format) and a predictor ("spData" format) datasets, the optional use of geographical distance as predictor variable in the GDM, the number of permutations to be run and the significance level to be tested.
 
 This current implementation only allows biological data in the format 1 using abundance values, as described in the \code{gdm} package.
 
