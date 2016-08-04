@@ -4,4 +4,4 @@
 .git
 .gitignore
 .Rhistory
-README.md
+README.Rmd
