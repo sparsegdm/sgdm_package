@@ -1,62 +1,67 @@
 ## ---- eval=FALSE---------------------------------------------------------
 #  library(devtools)
-#  devtools::install_git(...)
+#  devtools::install_git("sparsegdm/sgdm_package")
 #  library(sgdm)
 
 ## ---- echo=FALSE---------------------------------------------------------
 library(sgdm)
 
-## ---- hide=TRUE----------------------------------------------------------
-sgdm.gs <- sgdm.train(predData = spectra, bioData = trees, k = 30, predPenalization = seq(0.6, 1, 0.1), bioPenalization = seq(0.6, 1, 0.1), geo = F)
+## ---- results='hide'-----------------------------------------------------
+sgdm.gs <- sgdm.param(predData = spectra, bioData = trees, k = 30, predPenalization = seq(0.6, 1, 0.1), bioPenalization = seq(0.6, 1, 0.1), geo = F)
 
 ## ------------------------------------------------------------------------
 print(sgdm.gs, digits = 4)
 
-## ---- hide=TRUE----------------------------------------------------------
-sgdm.sccbest <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "c", k = 30)
+## ---- results='hide'-----------------------------------------------------
+sgdm.model <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "m", k = 30)
 
 ## ------------------------------------------------------------------------
-spData.best <- gdm::formatsitepair(trees, 1, dist = "bray", abundance = TRUE,
-               siteColumn = "Plot_ID", XColumn = "X",YColumn = "Y",
-               predData = sgdm.sccbest)
+summary(sgdm.model)
 
-## ------------------------------------------------------------------------
-sgdm.model <- gdm::gdm(spData.best)
-
-## ------------------------------------------------------------------------
 sgdm.model$explained
 
-## ------------------------------------------------------------------------
-plot(sgdm.model$predicted, sgdm.model$observed, xlim = c(0, 1), ylim = c(0, 1))
-abline(0, 1)
+## ---- results='hide'-----------------------------------------------------
+sgdm.sccbest <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "c", k = 30)
+sgdm.vbest <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "v", k = 30)
 
-## ---- hide=TRUE----------------------------------------------------------
+## ---- results='hide'-----------------------------------------------------
 sigtest.sgdm <- gdm.varsig(predData = sgdm.sccbest, bioData = trees)
 
 ## ------------------------------------------------------------------------
-spData.red.best <- data.reduce(spData.best, datatype = "sp", sigtest.sgdm)
-sgdm.red.model <- gdm::gdm(spData.red.best)
-
-sgdm.red.model$explained
-
-plot(sgdm.red.model$predicted,sgdm.red.model$observed,xlim=c(0,1),ylim=c(0,1))
-abline(0,1)
+sgdm.sccbest.red <- data.reduce(data = sgdm.sccbest, datatype = "pred", sigtest = sigtest.sgdm)
 
 ## ------------------------------------------------------------------------
-gdm.cv(spData.best, nfolds = 10, performance = "rmse")
+spData.sccabest.red <- gdm::formatsitepair(bioData = trees, bioFormat = 1, dist = "bray",
+                                           abundance = TRUE, siteColumn = "Plot_ID", 
+                                           XColumn = "X",YColumn = "Y", predData = sgdm.sccbest.red)
+
+sgdm.model.red <- gdm::gdm(data = spData.sccabest.red)
 
 ## ------------------------------------------------------------------------
-gdm.cv(spData.best, nfolds = 10, performance = "r2")
+summary(sgdm.model.red)
+
+sgdm.model.red$explained
+
+plot(sgdm.model.red$predicted, sgdm.model.red$observed, xlim = c(0, 1), ylim = c(0, 1))
+abline(0, 1)
 
 ## ------------------------------------------------------------------------
-raster::plotRGB(spectral.image, r = 20, g = 10, b = 2, stretch = "hist")
+gdm.cv(spData = spData.sccabest.red, nfolds = 10)
 
 ## ------------------------------------------------------------------------
-v <- sgdm.best(perf.matrix = sgdm.gs, predData = spectra, bioData = trees, output = "v", k = 30)
-component.image <- predData.transform(predData = spectral.image, v = v)
+gdm.cv(spData = spData.sccabest.red, nfolds = 10, performance = "r2")
+
+## ------------------------------------------------------------------------
+community.samples <- gdm.map(spData = spData.sccabest.red, model = sgdm.model.red, k = 0, t = 0.1)
+
+## ------------------------------------------------------------------------
+raster::plotRGB(spectral.image, r = 43, g = 22, b = 12, stretch = "hist")
+
+## ------------------------------------------------------------------------
+component.image <- predData.transform(predData = spectral.image, v = sgdm.vbest)
 component.image.red <- data.reduce(component.image, datatype = "pred", sigtest = sigtest.sgdm)
 
 ## ------------------------------------------------------------------------
-mapsgdm.red <- gdm.map(spData.red.best, component.image.red, sgdm.red.model, k = 3)
-raster::plotRGB(mapsgdm.red, r = 3, g = 2, b = 1, stretch = "hist")
+map.sgdm.red <- gdm.map(spData = spData.sccabest.red, predMap = component.image.red, model = sgdm.model.red, k = 3)
+raster::plotRGB(map.sgdm.red, r = 3, g = 2, b = 1, stretch = "hist")
 
