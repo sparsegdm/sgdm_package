@@ -25,7 +25,7 @@ library(sgdm)
 
 ## Exemplary data
 
-The exemplary datasets include one biological dataset, one predictor dataset and one predictor map (Figure 1). The “trees” biological dataset is composed of 30 observations with abundance values for 48 different tree families in an area of natural vegetation in the Brazilian Cerrado. The“spectra” predictor dataset is composed of the same 30 observations, with reflectance values for 83 narrow spectral bands, extracted from spaceborne hyperspectral Hyperion imagery, after pre-processing and band quality screening. Both these datasets include a first ID column, and the later also include two geographical coordinate (X and Y) columns. The “spectral.image” predictor map is a raster object, constituting a subset (100x100 pixels) of the respective Hyperion image, with respectively the same pre-processing and band screening.
+The package includes nine functions, and three exemplary datasets. The exemplary datasets include one biological dataset, one predictor dataset and one predictor map. The trees biological dataset is composed of 30 observations with abundance values for 48 different tree families in an area of natural vegetation in the Brazilian Cerrado. The spectra predictor dataset is composed of the same 30 observations, with reflectance values for 83 narrow spectral bands; extracted from spaceborne hyperspectral Hyperion imagery after pre-processing and band quality screening. Both datasets include an ID column and the later also include two geographical coordinate (X and Y) columns. The spectral.image predictor map is a raster object constituting of a subset (100 times 100 pixels) of the respective Hyperion image.
 
 ## Running a `sgdm` model
 
