@@ -30,7 +30,7 @@ library(sgdm)
 
 Before you can install the `devtools` package.
 
-**Note 1:** The `PMA` package, which is required by SGDDM and installed automatically, needs the `impute` package from the bioclite repository. However, it seems that `PMA` doe not automatically load `impute`. If you haven't installed either `PMA` or `impute` before, you need to first install the `impute` package:
+**Note 2:** The `PMA` package, which is required by SGDDM and installed automatically, needs the `impute` package from the bioclite repository. However, it seems that `PMA` doe not automatically load `impute`. If you haven't installed either `PMA` or `impute` before, you need to first install the `impute` package:
 
 ```{r, echo=FALSE}
 source("https://bioconductor.org/biocLite.R")
