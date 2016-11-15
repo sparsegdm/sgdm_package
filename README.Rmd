@@ -15,12 +15,26 @@ In order to install `sgdm` from GitHub, you need to install the `devtools` packa
 
 ```{r, eval=FALSE}
 library(devtools)
-devtools::install_git("sparsegdm/sgdm_package")
+devtools::install_github("sparsegdm/sgdm_package")
 library(sgdm)
 ```
 
 ```{r, echo=FALSE}
 library(sgdm)
+```
+
+*Note 1:* On a Linux (Ubuntu) machine things might be a little more complicated and you first need to install openssl for linux:
+
+sudo apt-get install libcurl4-openssl-dev libxml2-dev
+sudo apt-get install libssl-dev
+
+Before you can install the `devtools` package.
+
+*Note 1:* The `PMA` package, which is required by SGDDM and installed automatically, needs the `impute` package from the bioclite repository. However, it seems that `PMA` doe not automatically load `impute`. If you haven't installed either `PMA` or `impute` before, you need to first install the `impute` package:
+
+```{r, echo=FALSE}
+source("https://bioconductor.org/biocLite.R")
+biocLite("impute")
 ```
 
 ## Exemplary data
