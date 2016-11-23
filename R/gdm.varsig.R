@@ -109,5 +109,8 @@ gdm.varsig <-
     cat("Significance test of GDM model variable contributions completed\n")
     cat("\n")
 
-    return(cont.sig<=sig)
+    cont <- gdm.varcont(spData)
+    cont0 <- 1-(cont>0)
+
+    return((cont.sig+cont0)<=sig)
   }
