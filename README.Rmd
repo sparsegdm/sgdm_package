@@ -1,13 +1,10 @@
----
-title: "sgdm: an R package for performing sparse generalized dissimilarity modeling including tools for gdm"
-author: "Pedro J. Leitão, Marcel Schwieder, Cornelius Senf"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{sgdm-vignette}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
+# sgdm: an R package for performing sparse generalized dissimilarity modelling with tools for gdm
+
+Pedro J. Leitão, Marcel Schwieder, and Cornelius Senf
+
+**Reference**
+
+Leitão, J. P., Schwieder, M., and Senf, C. (*in press*) sgdm: an R package for performing sparse generalized dissimilarity modelling, including tools for gdm. *ISPRS International Journal of Geo-Information*.
 
 ## Installing `sgdm`
 
