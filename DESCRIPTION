@@ -1,7 +1,7 @@
 Package: sgdm
 Type: Package
 Title: Package for performing sparse generalized dissimilarity model including tools for gdm
-Version: 0.1
+Version: 1.0
 Date: 2016-06-03
 Author: Pedro J. Leitão, Marcel Schwieder, Cornelius Senf
 Maintainer: Pedro J. Leitão <steppebird@gmail.com>, Cornelius Senf <corneliussenf@googlemail.de>
