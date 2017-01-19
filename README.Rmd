@@ -4,7 +4,7 @@ Pedro J. Leitão, Marcel Schwieder, and Cornelius Senf
 
 **Reference**
 
-Leitão, J. P., Schwieder, M., and Senf, C. (*in press*) sgdm: an R package for performing sparse generalized dissimilarity modelling, including tools for gdm. *ISPRS International Journal of Geo-Information*.
+Leitão, J. P., Schwieder, M., and Senf, C. (2017) sgdm: an R package for performing sparse generalized dissimilarity modelling, including tools for gdm. *ISPRS International Journal of Geo-Information*, 6(1), 23-35.
 
 ## Installing `sgdm`
 
